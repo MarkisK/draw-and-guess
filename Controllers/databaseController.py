@@ -7,6 +7,7 @@ uriLive = "mongodb://<SuperUser>:<Password>@ds123499.mlab.com:23499/draw_and_gue
 client = pymongo.MongoClient(uriLocal)
 database = client['draw-and-guess']
 
+
 # Create retrieval method of JSON objects
 
 # Create post method of JSON object
