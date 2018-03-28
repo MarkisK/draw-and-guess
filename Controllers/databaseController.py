@@ -18,6 +18,14 @@ class DataBaseController:
             self.client = pymongo.MongoClient(uri)
             self.db = self.client['draw_and_guess']
 
+    def insert_drawing(self):
+        # TODO INSERT USERS DRAWING
+        return
+
+    def get_all_drawings(self):
+        # TODO GET ALL DRAWINGS FROM DATABASE
+        return
+
 
 d = DataBaseController()
 print(list(d.db['apples'].find()))
