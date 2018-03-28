@@ -1,4 +1,6 @@
 import pymongo
+# needs access to view object
+# needs access to model object
 
 
 class DataBaseController:
@@ -25,6 +27,7 @@ class DataBaseController:
     def get_all_drawings(self):
         # TODO GET ALL DRAWINGS FROM DATABASE
         return
+
 
 
 d = DataBaseController()
