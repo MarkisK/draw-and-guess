@@ -41,5 +41,8 @@ When clicking these arrows you will see various option.
                     E. Click merge into current to ensure that your master is updated with the code that you have currently coded in your branch
                     F. Click the arrow next to your master branch and click check out
                     G. Click the VCS ---- GIT -------> PUSH (This will create a new branch with your changes on repo) or rebase (will add changes directly to /Dev)
-                    
+
+
+
+
 
