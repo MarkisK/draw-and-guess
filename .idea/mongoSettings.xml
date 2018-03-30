@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="MongoConfiguration">
+    <option name="serverConfigurations">
+      <list>
+        <ServerConfiguration>
+          <option name="label" value="LocalHost" />
+          <option name="serverUrls">
+            <list>
+              <option value="localhost:27017" />
+            </list>
+          </option>
+          <option name="sshTunnelingConfiguration">
+            <SshTunnelingConfiguration />
+          </option>
+        </ServerConfiguration>
+        <ServerConfiguration>
+          <option name="authenticationDatabase" value="admin" />
+          <option name="label" value="MLab Server" />
+          <option name="password" value="March26$" />
+          <option name="serverUrls">
+            <list>
+              <option value="ds123499.mlab.com:23499" />
+            </list>
+          </option>
+          <option name="sshTunnelingConfiguration">
+            <SshTunnelingConfiguration />
+          </option>
+          <option name="userDatabase" value="draw_and_guess" />
+          <option name="username" value="MarkisKelly" />
+        </ServerConfiguration>
+      </list>
+    </option>
+    <option name="shellPath" value="/usr/local/mongodb/bin/mongo" />
+  </component>
+</project>
