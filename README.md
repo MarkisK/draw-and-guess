@@ -42,7 +42,8 @@ When clicking these arrows you will see various option.
                     F. Click the arrow next to your master branch and click check out
                     G. Click the VCS ---- GIT -------> PUSH (This will create a new branch with your changes on repo) or rebase (will add changes directly to /Dev)
                     **Ensure to change the branch name in the push commit window i.e origin/Dev as that is where you push it directly to our dev section or leave the same to create new branch on repo
-***
+*****
+
 
 
 
