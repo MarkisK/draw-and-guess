@@ -35,5 +35,10 @@ When clicking these arrows you will see various option.
 4. After each night if you are comfortable with checking in your code to the /Dev branch then
 
                     A. Select VCS --> GIT ---> Commit File (commit early and often when coding)
-                    B. You will presented with options to commit and push which I suggest you do but not necessary if you do not want to check into repo
+                    B. View your changes and click commit which you should do only.
+                    C. When completely done coding go back to the arrows in bottom right and click to open options
+                    D. Look under your local option where your master is and click the right arrow
+                    E. Click merge into current to ensure that your master is updated with the code that you have currently coded in your branch
+                    F. Click the arrow next to your master branch and click check out
+                    G. Click the VCS ---- GIT -------> PUSH
 
