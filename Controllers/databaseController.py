@@ -21,7 +21,7 @@ class DataBaseController:
             self.db = self.client['draw_and_guess']
 
     def insert_drawing(self):
-        # TODO INSERT USERS DRAWING
+
         return
 
     def get_all_drawings(self):
@@ -29,8 +29,8 @@ class DataBaseController:
         return
 
 
-
 d = DataBaseController()
+
 print(list(d.db['apples'].find()))
 # collection = db['drawings']
 
