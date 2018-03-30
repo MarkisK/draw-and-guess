@@ -1,11 +1,98 @@
 <!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Title</title>
-</head>
-<body>
-<h1>Draw and guess app</h1>
-<h2>Add app contents to this file</h2>>
-</body>
+<html>
+    <head>
+        <link href="../static/_assets/literallycanvas.css" rel="stylesheet">
+
+        <style>
+            h1 {
+                background-color: mediumSeaGreen;
+                padding: 70px;
+                bolder: 4px solid black
+            }
+        </style>
+
+        <style type="text/css">
+            .fs-container {
+                width: 800px;
+                margin: auto;
+            }
+
+            .literally {
+                width: 100%;
+                height: 100%;
+                position: relative;
+            }
+        </style>
+
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+
+        <nav class="item"style= "text-align:center; background-color:dodgerBlue">
+          <a href="#home" class="item">Home</a>
+          <a href="#shapes" class="item">Shapes</a>
+          <a href="#contact" class="item">Contact</a>
+        </nav>
+
+        <p id="t"></p>
+
+        <script >
+            document.getElementById("t").innerHTML = new Date();
+        </script>
+
+        <p style= "text-align:right"><a href="#c">Go to the drawing canvas</a></p>
+        </head>
+
+        <title> CMSC 495_Draw_and_Guess Project</title>
+
+        <h1 style= "text-align:center; color:blue"title= "Ernest, Sugar, Medwards, David, Markis, Nicholas"><ins> WELCOME TO DRAW AND GUESS</ins></h1>
+        <h2 style= "color:blue;font-family: courier" title="explanation"> Application Specifications</h2>
+    </head>
+
+
+
+    <hr>
+
+    <body style= "background-color:rgba(199,200,197,0.6)">
+        <p>-User should be able to draw any shape<br> -User should be able to navigate easily through web application<br> -Draw
+        and Guess should correctly state the shape that is drawn<br>-Draw and Guess should learn various shapes over continuous usage</p>
+        <a href= "table.html" target="_self"></a>
+        <h id="c">Notice</h>
+
+            <!-- canvas -->
+            <!-- todo configure the tools available in the canvas -->
+            <div class="fs-container">
+              <div id="lc"></div>
+            </div>
+
+            <script src="../static/_js_libs/react-0.14.3.js"></script>
+            <script src="../static/_js_libs/literallycanvas.js"></script>
+
+            <script type="text/javascript">
+              var lc = LC.init(document.getElementById("lc"), {
+                imageURLPrefix: '../static/_assets/lc-images',
+                toolbarPosition: 'bottom',
+                defaultStrokeWidth: 2,
+                strokeWidths: [1, 2, 3, 5, 30]
+              });
+            </script>
+
+             <!-- canvas object output - for dev purposes until db routing is configured -->
+            <div>
+                <button onclick="jsonify()">JSONify</button>
+                <script>
+                    function jsonify() {
+                        var obj = JSON.stringify(lc.getSnapshot(['shapes', 'imageSize', 'position', 'scale']))
+                        document.getElementById("output").innerHTML = obj;
+                    }
+                </script>
+              </div>
+            <div id="output"></div>
+
+         <p id="demo" style= "text-align:right">browse</p>
+        <button
+        onclick="document.getElementById('demo').innerHTML= 'Drawing is fun'"> Open</button>
+        <address>Contact:<br>
+        Ernest<br> Sugar <br>Medwards<br> David<br> Markis<br> Nicholas <br>Java/html/javaScript programmer<br> University of Maryland<br> Maryland<br> USA</address>
+        <a href= "html_table.asp" style="text-align:center" target="_self">www.menasu.com</a>
+    </body>
 </html>
