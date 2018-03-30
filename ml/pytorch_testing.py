@@ -61,6 +61,7 @@
 
 
 # Image recognition example using pyTorch
+# Code following: http://pytorch.org/tutorials/beginner/blitz/cifar10_tutorial.html
 
 import torch
 from torch.autograd import Variable
