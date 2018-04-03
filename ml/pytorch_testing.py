@@ -67,48 +67,46 @@ import torch
 from torch.autograd import Variable
 import torchvision
 import torchvision.transforms as transforms
+import torch.utils.data as data
 import torch.nn as nn
 import torch.nn.functional as F
 import torch.optim as optim
+from torchvision.datasets import ImageFolder
 
 
 class Net(nn.Module):
     def __init__(self):
         super(Net, self).__init__()
-        self.conv1 = nn.Conv2d(3, 6, 5)
-        self.pool = nn.MaxPool2d(2, 2)
-        self.conv2 = nn.Conv2d(6, 16, 5)
-        self.fc1 = nn.Linear(16 * 5 * 5, 120)
+        self.conv1 = nn.Conv2d(3, 64, 5)
+        self.pool = nn.MaxPool2d(4, 4)
+        self.conv2 = nn.Conv2d(64, 128, 5)
+        self.fc1 = nn.Linear(128 * 12 * 12, 120)
         self.fc2 = nn.Linear(120, 84)
         self.fc3 = nn.Linear(84, 10)
 
     def forward(self, x):
         x = self.pool(F.relu(self.conv1(x)))
         x = self.pool(F.relu(self.conv2(x)))
-        x = x.view(-1, 16 * 5 * 5)
+        x = x.view(-1, 128 * 12 * 12)
         x = F.relu(self.fc1(x))
         x = F.relu(self.fc2(x))
         x = self.fc3(x)
         return x
 
 
-print('beginning test files download (~190MB). please wait...')
+transform = transforms.Compose([
+    transforms.Resize((224, 224)),
+    transforms.ToTensor(),
+    transforms.Normalize(mean=[0.485, 0.456, 0.406],
+                         std=[0.229, 0.224, 0.225]),
+])
 
-transform = transforms.Compose(
-    [transforms.ToTensor(),
-     transforms.Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5))]
-)
-
-trainset = torchvision.datasets.CIFAR10(root='./data', train=True,
-                                        download=True, transform=transform)
-trainloader = torch.utils.data.DataLoader(trainset, batch_size=4,
-                                          shuffle=True, num_workers=2)
-
-testset = torchvision.datasets.CIFAR10(root='./data', train=False,
-                                       download=True, transform=transform)
-testloader = torch.utils.data.DataLoader(testset, batch_size=4,
+dataset = ImageFolder(root='./images/train', transform=transform)
+dataloader = data.DataLoader(dataset, batch_size=20,
+                             shuffle=True, num_workers=2)
+testset = ImageFolder(root='./images/test', transform=transform)
+testloader = torch.utils.data.DataLoader(testset, batch_size=20,
                                          shuffle=False, num_workers=2)
-
 classes = ('plane', 'car', 'bird', 'cat',
            'deer', 'dog', 'frog', 'horse', 'ship', 'truck')
 
@@ -119,14 +117,17 @@ optimizer = optim.SGD(net.parameters(), lr=0.001, momentum=0.9)
 print('beginning training...')
 
 for epoch in range(5):
+    print('epoch ' + str(epoch))
     running_loss = 0.0
-    for i, data in enumerate(trainloader, 0):
+    for i, data in enumerate(dataloader, 0):
+        if i % 200 == 0:
+            print('dataloader: ' + str(i))
         # get the inputs
         inputs, labels = data
 
         # wrap them in Variable
         # uncomment following and comment one after to enable GPU processing
-        # input, labels = Variable(inputs.cuda()), Variable(labels.cuda()))
+        # inputs, labels = Variable(inputs.cuda()), Variable(labels.cuda())
         inputs, labels = Variable(inputs), Variable(labels)
 
         # zero the parameter gradients
@@ -134,6 +135,7 @@ for epoch in range(5):
 
         # forward + backward + optimize
         outputs = net(inputs)
+        # labels = torch.unsqueeze(torch.ones([]), 0)
         loss = criterion(outputs, labels)
         loss.backward()
         optimizer.step()
@@ -144,6 +146,7 @@ for epoch in range(5):
             print('[%d, %5d] loss: %.3f' %
                   (epoch + 1, i + 1, running_loss / 2000))
             running_loss = 0.0
+        print('finished {}. running_loss: {}'.format(i, running_loss))
 
 print('Finished Training')
 
