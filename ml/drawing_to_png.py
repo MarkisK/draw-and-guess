@@ -7,6 +7,9 @@ Drawings look like this: [[[224, 214, 169, 104, 57, 31, 12, 1, 1, 10, 23, 56, 10
 LiterallyCanvas doesn't seem to have an option for outputting the
 drawing strokes of a given canvas session. This file is planning ahead
 in case we can't get the stroke data from literallycanvas
+
+    example use case for building images from
+    .bin or .ndjson files at EOF.
 """
 import os
 import struct
@@ -161,7 +164,7 @@ def build_image_folder(filetype='.bin', max=-1):
     return
 
 
-build_image_folder('.ndjson', 1000)
+build_image_folder('.ndjson', max=1000)
 print('finished building image folder')
 
 # Example:
@@ -170,3 +173,10 @@ print('finished building image folder')
 # Example using .ndjson files:
 # for entry in unpack_ndjson('circle.ndjson'):
 #     create_image(entry['image'], file_output_name)
+#
+# Put .bin or .ndjson files in /ml/data folder
+# Specify number of training images to create by changing max
+# test images created = 25% of max
+#
+# Download Quick Draw .ndjson files here [Recommended]: https://console.cloud.google.com/storage/browser/quickdraw_dataset/full/simplified
+# Download Quick Draw .bin files here: https://console.cloud.google.com/storage/browser/quickdraw_dataset/full/binary
