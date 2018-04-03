@@ -144,10 +144,10 @@ transform = transforms.Compose([
 ])
 
 # Create the data loader (training images) and the test loader (test iamges)
-dataset = ImageFolder(root='./images/train', transform=transform)
+dataset = ImageFolder(root='./images/train', transform=transform)  # [6]
 dataloader = data.DataLoader(dataset, batch_size=20,
                              shuffle=True, num_workers=2)
-testset = ImageFolder(root='./images/test', transform=transform)
+testset = ImageFolder(root='./images/test', transform=transform)  # [6]
 testloader = torch.utils.data.DataLoader(testset, batch_size=20,
                                          shuffle=False, num_workers=2)
 net = Net()  # Create instance of our neural network, untrained
@@ -211,3 +211,4 @@ print('Accuracy of the network on the 10000 test images: %d %%' % (
 # [3] View function: https://stackoverflow.com/questions/42479902/how-view-method-works-for-tensor-in-torch/42482819#42482819
 # [4] Linear transform layers: http://pytorch.org/docs/master/_modules/torch/nn/modules/linear.html
 # [5] Variables and autograd: http://pytorch.org/tutorials/beginner/examples_autograd/two_layer_net_autograd.html
+# [6] ImageFolder: http://pytorch.org/docs/master/torchvision/datasets.html#imagefolder
