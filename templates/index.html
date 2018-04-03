@@ -3,27 +3,6 @@
     <head>
         <link href="../static/_assets/literallycanvas.css" rel="stylesheet">
 
-        <style>
-            h1 {
-                background-color: mediumSeaGreen;
-                padding: 70px;
-                bolder: 4px solid black
-            }
-        </style>
-
-        <style type="text/css">
-            .fs-container {
-                width: 800px;
-                margin: auto;
-            }
-
-            .literally {
-                width: 100%;
-                height: 100%;
-                position: relative;
-            }
-        </style>
-
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1">
 
@@ -49,7 +28,6 @@
     </head>
 
 
-
     <hr>
 
     <body style= "background-color:rgba(199,200,197,0.6)">
@@ -61,36 +39,23 @@
             <!-- canvas -->
             <!-- todo configure the tools available in the canvas -->
             <div class="fs-container">
-              <div id="lc"></div>
+                <div id="lc"></div>
             </div>
 
             <script src="../static/_js_libs/react-0.14.3.js"></script>
             <script src="../static/_js_libs/literallycanvas.js"></script>
-
-            <script type="text/javascript">
-              var lc = LC.init(document.getElementById("lc"), {
-                imageURLPrefix: '../static/_assets/lc-images',
-                toolbarPosition: 'bottom',
-                defaultStrokeWidth: 2,
-                strokeWidths: [1, 2, 3, 5, 30]
-              });
-            </script>
+            <script src="../static/canvas_module.js"></script>
 
              <!-- canvas object output - for dev purposes until db routing is configured -->
             <div>
                 <button onclick="jsonify()">JSONify</button>
-                <script>
-                    function jsonify() {
-                        var obj = JSON.stringify(lc.getSnapshot(['shapes', 'imageSize', 'position', 'scale']))
-                        document.getElementById("output").innerHTML = obj;
-                    }
-                </script>
-              </div>
+            </div>
             <div id="output"></div>
 
          <p id="demo" style= "text-align:right">browse</p>
-        <button
-        onclick="document.getElementById('demo').innerHTML= 'Drawing is fun'"> Open</button>
+
+        <button onclick="document.getElementById('demo').innerHTML= 'Drawing is fun'"> Open</button>
+
         <address>Contact:<br>
         Ernest<br> Sugar <br>Medwards<br> David<br> Markis<br> Nicholas <br>Java/html/javaScript programmer<br> University of Maryland<br> Maryland<br> USA</address>
         <a href= "html_table.asp" style="text-align:center" target="_self">www.menasu.com</a>
