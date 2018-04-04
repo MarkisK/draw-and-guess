@@ -14,3 +14,7 @@ h1 {
     height: 100%;
     position: relative;
 }
+
+.background {
+    background-color:rgba(199,200,197,0.6)
+}
