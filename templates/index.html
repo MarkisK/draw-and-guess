@@ -1,7 +1,9 @@
 {%  extends 'layout.html' %} <!-- extends the default layout page -->
 
+
     <!-- content specific to this page's body -->
     {% block body %}
+
         <h1 style= "text-align:center; color:blue"title= "Ernest, Sugar, Medwards, David, Markis, Nicholas"><ins> WELCOME TO DRAW AND GUESS</ins></h1>
         <h2 style= "color:blue;font-family: courier" title="explanation"> Application Specifications</h2>
 
@@ -11,20 +13,23 @@
         <h id="c">Notice</h>
 
             <!-- canvas -->
-            <!-- todo configure the tools available in the canvas -->
-            <div class="fs-container">
-                <div id="lc"></div>
-            </div>
+                <link href="../static/_assets/literallycanvas.css" rel="stylesheet">
 
-            <script src="../static/_js_libs/react-0.14.3.js"></script>
-            <script src="../static/_js_libs/literallycanvas.js"></script>
-            <script src="../static/canvas_module.js"></script>
+                <!-- todo configure the tools available in the canvas -->
 
-             <!-- canvas object output - for dev purposes until db routing is configured -->
-            <div>
-                <button onclick="jsonify()">JSONify</button>
-            </div>
-            <div id="output"></div>
+
+                <div class="fs-container">
+                    <div id="lc"></div>
+
+                    <script src="../static/_js_libs/react-0.14.3.js"></script>
+                    <script src="../static/_js_libs/literallycanvas.js"></script>
+                    <script src="../static/canvas_module.js"></script>
+                </div>
+                 <!-- canvas object output - for dev purposes until db routing is configured -->
+                <div>
+                    <button onclick="jsonify()">JSONify</button>
+                </div>
+                <div id="output"></div>
 
          <p id="demo" style= "text-align:right">browse</p>
 
