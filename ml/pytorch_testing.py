@@ -94,7 +94,7 @@ class Net(nn.Module):
     # nn.Module is a neural network.
     # we override functions to build the network
     def __init__(self):
-        self.total_classes = 10
+        self.total_classes = 22
         # The init function is where we setup the different layers
         # of the neural network.
         # We define them in the order we use them, by convention
@@ -105,15 +105,18 @@ class Net(nn.Module):
         # For each layer, the out and in values need to match
         # For example, conv1 has out=64, conv2 has in=64
         super(Net, self).__init__()  # Init the underlying neural network (nn.Module)
-        self.conv1 = nn.Conv2d(3, 64, 5)  # 2D convolution layer(in, out, kernel) [1]
-        self.pool = nn.MaxPool2d(4, 4)  # Max pooling layer(kernel_size, stride) [2]
-        self.conv2 = nn.Conv2d(64, 128, 5)  # Another 2D convolution layer (in, out, kernel) [1]
-        self.fc1 = nn.Linear(128 * 12 * 12, 120)  # Linear transform (in, out) [4]
-        self.fc2 = nn.Linear(120, 84)
-        self.fc3 = nn.Linear(84, self.total_classes)  # Last layer need output neuron = to total_classes
+        self.conv1 = nn.Conv2d(3, 64, 5).cuda()  # 2D convolution layer(in, out, kernel) [1]
+        self.pool = nn.MaxPool2d(4, 4).cuda()  # Max pooling layer(kernel_size, stride) [2]
+        self.conv2 = nn.Conv2d(64, 128, 5).cuda()  # Another 2D convolution layer (in, out, kernel) [1]
+        self.fc1 = nn.Linear(128 * 12 * 12, 120).cuda()  # Linear transform (in, out) [4]
+        self.drop = nn.Dropout2d(p=.2).cuda()  # Dropout [7]
+        self.fc2 = nn.Linear(120, 84).cuda()
+        self.drop = nn.Dropout2d(p=.2).cuda()  # Dropout [7]
+        self.fc3 = nn.Linear(84, self.total_classes).cuda()  # Last layer need output neuron = to total_classes
 
     def forward(self, x):
         x = self.pool(F.relu(self.conv1(x)))  # Conv Layer1 -> ReLU (activation) -> Max Pool -> x
+        x = self.drop(x)
         x = self.pool(F.relu(self.conv2(x)))  # Conv Layer2 -> ReLU (activation) -> Max Pool -> x
         # The following line transforms the dimension to be
         # 128 * 12 * 12 columns and however many rows fit
@@ -151,8 +154,9 @@ testset = ImageFolder(root='./images/test', transform=transform)  # [6]
 testloader = torch.utils.data.DataLoader(testset, batch_size=20,
                                          shuffle=False, num_workers=2)
 net = Net()  # Create instance of our neural network, untrained
-criterion = nn.CrossEntropyLoss()
-optimizer = optim.SGD(net.parameters(), lr=0.001, momentum=0.9)
+criterion = nn.CrossEntropyLoss().cuda()
+# optimizer = optim.SGD(net.parameters(), lr=0.001, momentum=0.9)
+optimizer = optim.Adam(net.parameters(), lr=0.001, weight_decay=1e-4)
 
 print('beginning training...')
 
@@ -163,14 +167,14 @@ for epoch in range(5):
     running_loss = 0.0  # Keeps track of how badly the network is classifying
     for i, data in enumerate(dataloader, 0):  # Iterate through the mini-batches
         if i % 200 == 0:
-            print('dataloader: ' + str(i))
+            print('{}: {}'.format('dataloader', i))
         # get the inputs
         inputs, labels = data  # inputs = mini-batch images, labels = mini-batch labels
 
         # wrap them in Variable
         # uncomment following and comment one after to enable GPU processing
-        # inputs, labels = Variable(inputs.cuda()), Variable(labels.cuda())
-        inputs, labels = Variable(inputs), Variable(labels)
+        inputs, labels = Variable(inputs.cuda()), Variable(labels.cuda())
+        # inputs, labels = Variable(inputs), Variable(labels)
         # Variable's are used to allow for automatic back propagation (shown later) [5]
 
         # zero the parameter gradients
@@ -183,12 +187,12 @@ for epoch in range(5):
         optimizer.step()  # optimization step
 
         # # print statistics -- optional
-        # running_loss += loss.data[0]
-        # if i % 2000 == 1999:  # print every 2000 mini-batches
-        #     print('[%d, %5d] loss: %.3f' %
-        #           (epoch + 1, i + 1, running_loss / 2000))
-        #     running_loss = 0.0
-        # print('finished {}. running_loss: {}'.format(i, running_loss))
+        running_loss += loss.data[0]
+        if i % 1000 == 0:  # print every 1000 mini-batches
+            print('[%d, %5d] loss: %.3f' %
+                  (epoch + 1, i + 1, running_loss / 1000))
+            running_loss = 0.0
+        print('finished {}. running_loss: {}'.format(i, running_loss))
 
 print('Finished Training')
 
@@ -197,6 +201,7 @@ correct = 0
 total = 0
 for data in testloader:
     images, labels = data
+    images, labels = images.cuda(), labels.cuda()
     outputs = net(Variable(images))
     _, predicted = torch.max(outputs.data, 1)
     total += labels.size(0)
@@ -212,3 +217,4 @@ print('Accuracy of the network on the 10000 test images: %d %%' % (
 # [4] Linear transform layers: http://pytorch.org/docs/master/_modules/torch/nn/modules/linear.html
 # [5] Variables and autograd: http://pytorch.org/tutorials/beginner/examples_autograd/two_layer_net_autograd.html
 # [6] ImageFolder: http://pytorch.org/docs/master/torchvision/datasets.html#imagefolder
+# [7] Dropout to avoid overfitting: http://pytorch.org/docs/master/_modules/torch/nn/modules/dropout.html

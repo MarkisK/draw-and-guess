@@ -164,7 +164,7 @@ def build_image_folder(filetype='.bin', max=-1):
     return
 
 
-build_image_folder('.ndjson', max=1000)
+build_image_folder('.ndjson', max=10000)
 print('finished building image folder')
 
 # Example:
