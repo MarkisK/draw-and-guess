@@ -1,36 +1,10 @@
-<!DOCTYPE html>
-<html>
-    <head>
-        <link href="../static/_assets/literallycanvas.css" rel="stylesheet">
+{%  extends 'layout.html' %} <!-- extends the default layout page -->
 
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1">
-
-        <nav class="item"style= "text-align:center; background-color:dodgerBlue">
-          <a href="#home" class="item">Home</a>
-          <a href="#shapes" class="item">Shapes</a>
-          <a href="#contact" class="item">Contact</a>
-        </nav>
-
-        <p id="t"></p>
-
-        <script >
-            document.getElementById("t").innerHTML = new Date();
-        </script>
-
-        <p style= "text-align:right"><a href="#c">Go to the drawing canvas</a></p>
-        </head>
-
-        <title> CMSC 495_Draw_and_Guess Project</title>
-
+    <!-- content specific to this page's body -->
+    {% block body %}
         <h1 style= "text-align:center; color:blue"title= "Ernest, Sugar, Medwards, David, Markis, Nicholas"><ins> WELCOME TO DRAW AND GUESS</ins></h1>
         <h2 style= "color:blue;font-family: courier" title="explanation"> Application Specifications</h2>
-    </head>
 
-
-    <hr>
-
-    <body style= "background-color:rgba(199,200,197,0.6)">
         <p>-User should be able to draw any shape<br> -User should be able to navigate easily through web application<br> -Draw
         and Guess should correctly state the shape that is drawn<br>-Draw and Guess should learn various shapes over continuous usage</p>
         <a href= "table.html" target="_self"></a>
@@ -59,5 +33,5 @@
         <address>Contact:<br>
         Ernest<br> Sugar <br>Medwards<br> David<br> Markis<br> Nicholas <br>Java/html/javaScript programmer<br> University of Maryland<br> Maryland<br> USA</address>
         <a href= "html_table.asp" style="text-align:center" target="_self">www.menasu.com</a>
-    </body>
-</html>
+
+{%  endblock %}
