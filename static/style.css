@@ -1,3 +1,8 @@
+.nav {
+    text-align:center;
+    background-color:dodgerBlue
+}
+
 h1 {
     background-color: mediumSeaGreen;
     padding: 70px;
@@ -7,6 +12,7 @@ h1 {
 .fs-container {
     width: 800px;
     margin: auto;
+    border: 1px solid #555;
 }
 
 .literally {
@@ -16,5 +22,9 @@ h1 {
 }
 
 .background {
-    background-color:rgba(199,200,197,0.6)
+    /*background-color:rgba(199,200,197,0.6)*/
+}
+
+.canvas {
+    border: 1px solid #555;
 }
