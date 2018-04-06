@@ -1,0 +1,26 @@
+<!--
+This acts as a layout for any pages to standardized common elements across the site
+-->
+
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <title> CMSC 495_Draw_and_Guess Project</title>
+
+        <link rel="stylesheet" type="text/css" href="../static/style.css" >
+
+        <script >
+            document.getElementById("t").innerHTML = new Date();
+        </script>
+    </head>
+    <body>
+        <nav class="nav">
+            <a href="#home" class="item">Home</a>
+            <a href="#shapes" class="item">Shapes</a>
+            <a href="#contact" class="item">Contact</a>
+        </nav>
+        {% block body %} {% endblock %}
+    </body>
+</html>
