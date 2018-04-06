@@ -9,6 +9,9 @@ This acts as a layout for any pages to standardized common elements across the s
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <title> CMSC 495_Draw_and_Guess Project</title>
 
+        <!-- Bootstrap styles -->
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+        <!-- Local styles -->
         <link rel="stylesheet" type="text/css" href="../static/style.css" >
 
         <script >
@@ -16,11 +19,10 @@ This acts as a layout for any pages to standardized common elements across the s
         </script>
     </head>
     <body>
-        <nav class="nav">
-            <a href="#home" class="item">Home</a>
-            <a href="#shapes" class="item">Shapes</a>
-            <a href="#contact" class="item">Contact</a>
-        </nav>
-        {% block body %} {% endblock %}
+        {% include 'includes/_navbar.html' %} <!-- will be included in all pages using this layout -->
+        
+        {% block body %}
+            <!-- elements specific to each page will be defined in this section of html docs-->
+        {% endblock %}
     </body>
 </html>
