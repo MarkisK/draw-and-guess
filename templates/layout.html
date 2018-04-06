@@ -18,9 +18,9 @@ This acts as a layout for any pages to standardized common elements across the s
             document.getElementById("t").innerHTML = new Date();
         </script>
     </head>
-    <body>
+    <body class="text-center">
         {% include 'includes/_navbar.html' %} <!-- will be included in all pages using this layout -->
-        
+
         {% block body %}
             <!-- elements specific to each page will be defined in this section of html docs-->
         {% endblock %}

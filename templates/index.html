@@ -4,7 +4,9 @@
     <!-- content specific to this page's body -->
     {% block body %}
 
-        <h1 style= "text-align:center; color:blue"title= "Ernest, Sugar, Medwards, David, Markis, Nicholas"><ins> WELCOME TO DRAW AND GUESS</ins></h1>
+        <div class="jumbotron jumbotron">
+            <h1 style= "text-align:center; color:blue"title= "Ernest, Sugar, Medwards, David, Markis, Nicholas"><ins> WELCOME TO DRAW AND GUESS</ins></h1>
+        </div>
         <h2 style= "color:blue;font-family: courier" title="explanation"> Application Specifications</h2>
 
         <p>
@@ -13,7 +15,8 @@
             -Draw and Guess should correctly state the shape that is drawn<br>
             -Draw and Guess should learn various shapes over continuous usage
 
-        </p>
+        <div class="class=cover-container d-flex h-100 p-3 mx-auto flex-column">
+
 {#        <a href= "table.html" target="_self"></a>#}
 
             <!-- canvas -->
@@ -33,12 +36,15 @@
                 <div>
                     <button onclick="jsonify()">JSONify</button>
                 </div>
-                <div id="output"></div>
+
+        </div>
+
+        <h2>Data Output:</h2>
+
+        <div id="output"></div>
 
 {#        <button onclick="document.getElementById('demo').innerHTML= 'Drawing is fun'"> Open</button>#}
 
-        <address>Contact:<br>
-        Ernest<br> Sugar <br>Medwards<br> David<br> Markis<br> Nicholas <br>Java/html/javaScript programmer<br> University of Maryland<br> Maryland<br> USA</address>
-        <a href= "html_table.asp" style="text-align:center" target="_self">www.menasu.com</a>
+
 
 {%  endblock %}
