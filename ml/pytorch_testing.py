@@ -77,6 +77,8 @@
 # The # is a number denoting the reference
 # Find references at the end of the file
 # ======================================================================
+import sys
+import time
 
 import torch
 import torch.nn as nn
@@ -105,19 +107,17 @@ class Net(nn.Module):
         # For each layer, the out and in values need to match
         # For example, conv1 has out=64, conv2 has in=64
         super(Net, self).__init__()  # Init the underlying neural network (nn.Module)
-        self.conv1 = nn.Conv2d(3, 64, 5).cuda()  # 2D convolution layer(in, out, kernel) [1]
-        self.pool = nn.MaxPool2d(4, 4).cuda()  # Max pooling layer(kernel_size, stride) [2]
-        self.conv2 = nn.Conv2d(64, 128, 5).cuda()  # Another 2D convolution layer (in, out, kernel) [1]
-        self.fc1 = nn.Linear(128 * 12 * 12, 120).cuda()  # Linear transform (in, out) [4]
-        self.drop = nn.Dropout2d(p=.2).cuda()  # Dropout [7]
+        self.conv1 = nn.Conv2d(3, 18, 8).cuda()  # 2D convolution layer(in, out, kernel) [1]
+        self.pool1 = nn.MaxPool2d(3, 3).cuda()  # Max pooling layer(kernel_size, stride) [2]
+        self.conv2 = nn.Conv2d(18, 64, 8).cuda()  # Another 2D convolution layer (in, out, kernel) [1]
+        self.fc1 = nn.Linear(64 * 21 * 21, 120).cuda()  # Linear transform (in, out) [4]
         self.fc2 = nn.Linear(120, 84).cuda()
-        self.drop = nn.Dropout2d(p=.2).cuda()  # Dropout [7]
         self.fc3 = nn.Linear(84, self.total_classes).cuda()  # Last layer need output neuron = to total_classes
+        self.drop = nn.Dropout2d(p=.1).cuda()  # Dropout [7]
 
     def forward(self, x):
-        x = self.pool(F.relu(self.conv1(x)))  # Conv Layer1 -> ReLU (activation) -> Max Pool -> x
-        x = self.drop(x)
-        x = self.pool(F.relu(self.conv2(x)))  # Conv Layer2 -> ReLU (activation) -> Max Pool -> x
+        x = self.pool1(F.relu(self.conv1(x)))  # Conv Layer1 -> ReLU (activation) -> Max Pool -> x
+        x = self.pool1(F.relu(self.conv2(x)))  # Conv Layer2 -> ReLU (activation) -> Max Pool -> x
         # The following line transforms the dimension to be
         # 128 * 12 * 12 columns and however many rows fit
         # that many columns. -1 will end up being the batch size
@@ -127,8 +127,9 @@ class Net(nn.Module):
         # 20 is the batch size (1st dimension)
         # Doubt that's how you're supposed to get the number
         # but, it still worked!
-        x = x.view(-1, 128 * 12 * 12)  # view transform to [batch_size, 18432]
+        x = x.view(-1, 64 * 21 * 21)  # view transform to [batch_size, 18432]
         x = F.relu(self.fc1(x))  # Linear layer -> ReLU (activation) -> x
+        x = self.drop(x)  # dropout [7]
         x = F.relu(self.fc2(x))  # Linear layer -> ReLU (activation) -> x
         x = self.fc3(x)  # Linear layer -> x
         return x  # x.shape = [batch_size, total_classes]
@@ -139,24 +140,37 @@ class Net(nn.Module):
 # I'm using the defaults from ResNet for the transform
 # The transforms can be anything, as long as the image
 # is normalized and all images as the same size
-transform = transforms.Compose([
-    transforms.Resize((224, 224)),
+train_transform = transforms.Compose([
+    transforms.RandomResizedCrop(224),
+    transforms.RandomHorizontalFlip(),
+    transforms.ToTensor(),
+    transforms.Normalize(mean=[0.485, 0.456, 0.406],
+                         std=[0.229, 0.224, 0.225]),
+])
+
+test_transform = transforms.Compose([
+    transforms.Resize((256, 256)),
+    transforms.CenterCrop(224),
     transforms.ToTensor(),
     transforms.Normalize(mean=[0.485, 0.456, 0.406],
                          std=[0.229, 0.224, 0.225]),
 ])
 
 # Create the data loader (training images) and the test loader (test iamges)
-dataset = ImageFolder(root='./images/train', transform=transform)  # [6]
+dataset = ImageFolder(root='./images/train', transform=test_transform)  # [6]
 dataloader = data.DataLoader(dataset, batch_size=20,
                              shuffle=True, num_workers=2)
-testset = ImageFolder(root='./images/test', transform=transform)  # [6]
+
+testset = ImageFolder(root='./images/test', transform=test_transform)  # [6]
 testloader = torch.utils.data.DataLoader(testset, batch_size=20,
                                          shuffle=False, num_workers=2)
 net = Net()  # Create instance of our neural network, untrained
 criterion = nn.CrossEntropyLoss().cuda()
+# criterion = nn.MSELoss().cuda()
 # optimizer = optim.SGD(net.parameters(), lr=0.001, momentum=0.9)
-optimizer = optim.Adam(net.parameters(), lr=0.001, weight_decay=1e-4)
+# optimizer = optim.SGD(net.parameters(), lr=0.001, momentum=0.9, nesterov=True)
+optimizer = optim.ASGD(net.parameters(), lr=0.01, weight_decay=1e-4)
+# optimizer = optim.Adam(net.parameters(), lr=0.001, weight_decay=1e-4)
 
 print('beginning training...')
 
@@ -196,6 +210,8 @@ for epoch in range(5):
 
 print('Finished Training')
 
+print('2s wait before testing...')
+time.sleep(2)
 # Check prediction accuracy
 correct = 0
 total = 0
@@ -218,3 +234,7 @@ print('Accuracy of the network on the 10000 test images: %d %%' % (
 # [5] Variables and autograd: http://pytorch.org/tutorials/beginner/examples_autograd/two_layer_net_autograd.html
 # [6] ImageFolder: http://pytorch.org/docs/master/torchvision/datasets.html#imagefolder
 # [7] Dropout to avoid overfitting: http://pytorch.org/docs/master/_modules/torch/nn/modules/dropout.html
+# [8] Save and Load models: https://stackoverflow.com/questions/42703500/best-way-to-save-a-trained-model-in-pytorch#43819235
+
+
+
