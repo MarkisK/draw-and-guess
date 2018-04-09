@@ -277,7 +277,7 @@ if __name__ == "__main__":
                       (epoch + 1, i + 1, running_loss / 1000, change, diff))
                 running_loss = 0.0
             print(
-                'finished {}. running_loss: {} +{2:.2f}'.format(
+                'finished {0}. running_loss: {1} +{2:.2f}'.format(
                     i, running_loss, loss.data[0]
                 )
             )
