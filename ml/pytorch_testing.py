@@ -80,6 +80,7 @@
 import datetime
 import math
 import pathlib
+import re
 import sys
 import time
 
@@ -109,6 +110,14 @@ def get_class_count(file_type='.ndjson'):
     return count
 
 
+def get_class_dict(file_type='.ndjson'):
+    classes = {}
+    for p in pathlib.Path('data/').iterdir():
+        if p.name.endswith(file_type):
+            classes[p.name[p.name.rfind('_')+1:p.name.rfind('.')]] = 0
+    return classes
+
+
 def train_image_count():
     count = 0
     train_dir = pathlib.Path('images/train/')
@@ -128,6 +137,15 @@ def load_model(model, path):
     return
 
 
+def list_class_loss(cl):
+    print("Class Loss")
+    tups = [(k, v) for k, v in cl.items()]
+    tups.sort(key=lambda x: x[1])  # sort by second value in tuple
+    for tup in tups:
+        print('{0:20}: {1}'.format(tup[0], tup[1]))
+    return
+
+
 class Net(nn.Module):
     # This is the neural network.
     # nn is the pyTorch neural network module.
@@ -135,7 +153,7 @@ class Net(nn.Module):
     # we override functions to build the network
     def __init__(self, total_classes=10):
         self.total_classes = total_classes
-        self.reshape = 64 * 16 * 16
+        self.reshape = 64 * 7 * 7
         # The init function is where we setup the different layers
         # of the neural network.
         # We define them in the order we use them, by convention
@@ -147,21 +165,22 @@ class Net(nn.Module):
         # For example, conv1 has out=64, conv2 has in=64
         super(Net, self).__init__()  # Init the underlying neural network (nn.Module)
         self.conv0 = nn.Conv2d(1, 24, 1, stride=1).cuda()
-        self.conv1 = nn.Conv2d(24, 96, 10, stride=2).cuda()  # 2D convolution layer(in, out, kernel) [1]
-        self.pool1 = nn.MaxPool2d(8, 1).cuda()  # Max pooling layer(kernel_size, stride) [2]
+        self.conv1 = nn.Conv2d(24, 96, 3, stride=1).cuda()  # 2D convolution layer(in, out, kernel) [1]
+        self.pool1 = nn.MaxPool2d(24, 4).cuda()  # Max pooling layer(kernel_size, stride) [2]
+        self.pool2 = nn.MaxPool2d(4, 1).cuda()
         self.conv2 = nn.Conv2d(96, 64, 8, stride=4).cuda()  # Another 2D convolution layer (in, out, kernel) [1]
         self.fc1 = nn.Linear(self.reshape, 168).cuda()  # Linear transform (in, out) [4]
         self.fc2 = nn.Linear(168, 84).cuda()
         self.fc3 = nn.Linear(84, self.total_classes).cuda()  # Last layer need output neuron = to total_classes
         self.drop = nn.Dropout2d(p=.1).cuda()  # Dropout [7]
         self.debug = [self.conv0, self.conv1, self.conv2,
-                      self.pool1, self.fc1, self.fc2, self.fc3,
+                      self.pool1, self.pool2, self.fc1, self.fc2, self.fc3,
                       self.drop, 'reshape: {}'.format(self.reshape)]
 
     def forward(self, x):
         x = self.pool1(F.relu(self.conv0(x)))
-        x = self.pool1(F.relu(self.conv1(x)))  # Conv Layer1 -> ReLU (activation) -> Max Pool -> x
-        x = self.pool1(F.relu(self.conv2(x)))  # Conv Layer2 -> ReLU (activation) -> Max Pool -> x
+        x = self.pool2(F.relu(self.conv1(x)))  # Conv Layer1 -> ReLU (activation) -> Max Pool -> x
+        x = self.pool2(F.relu(self.conv2(x)))  # Conv Layer2 -> ReLU (activation) -> Max Pool -> x
         # The following line transforms the dimension to be
         # 128 * 12 * 12 columns and however many rows fit
         # that many columns. -1 will end up being the batch size
@@ -180,6 +199,7 @@ class Net(nn.Module):
 
 
 if __name__ == "__main__":
+    mini_batch_size = 10
     # This is the transform applied to all images
     # The Normalize portion comes after it's turned into a tensor
     # I'm using the defaults from ResNet for the transform
@@ -209,16 +229,18 @@ if __name__ == "__main__":
     dataset = ImageFolder(root='./images/train',
                           transform=test_transform)  # [6]
     dataloader = data.DataLoader(dataset,
-                                 batch_size=10,
+                                 batch_size=mini_batch_size,
                                  shuffle=True,
                                  num_workers=2)
 
     testset = ImageFolder(root='./images/test',
                           transform=test_transform)  # [6]
     testloader = data.DataLoader(testset,
-                                 batch_size=10,
+                                 batch_size=mini_batch_size,
                                  shuffle=False,
                                  num_workers=2)
+
+    class_loss = get_class_dict()
 
     # Create instance of our neural network, untrained
     net = Net(get_class_count(file_type='.ndjson'))
@@ -237,14 +259,15 @@ if __name__ == "__main__":
 
     # epoch is just the number of times we want to
     # train using all the training images
-    epochs = 3
+    epochs = 1
+
     prev_loss = 0.0
     for epoch in range(epochs):
         print('epoch ' + str(epoch))
         running_loss = 0.0  # Keeps track of how badly the network is classifying
         for i, data in enumerate(dataloader, 0):  # Iterate through the mini-batches
-            if i % 200 == 0:
-                print('{}: {}'.format('dataloader', i))
+            # if i % 200 == 0:
+            #     print('{}: {}'.format('dataloader', i))
             # get the inputs
             inputs, labels = data  # inputs = mini-batch images, labels = mini-batch labels
 
@@ -273,16 +296,32 @@ if __name__ == "__main__":
                     change = 0.0
                 diff = -1 * (prev_loss - curr_loss)
                 prev_loss = curr_loss
-                print('[%d, %5d] loss: %.3f change: %.3f difference: %.3f' %
-                      (epoch + 1, i + 1, running_loss / 1000, change, diff))
+                print('[{0}, {1}] loss: {2:.3f} change: {3:.3f}% difference: {4:.3f}'.format(
+                    epoch + 1, i + 1, running_loss / 1000, change, diff
+                ))
                 running_loss = 0.0
-            print(
-                'finished {0}. running_loss: {1} +{2:.2f}'.format(
-                    i, running_loss, loss.data[0]
-                )
-            )
+            print('finished {0}. running_loss: {1:20.10f} +{2:.2f}'.format(
+                i, running_loss, loss.data[0]
+            ))
+
+            # The following is an attempt to determine which
+            # classes cause the network the most trouble.
+            # Compute how often a label was seen in this mini-batch
+            class_count = get_class_dict()  # Hold count of label occurrence
+            for label in labels:
+                idx = label.data[0]
+                key = dataset.classes[idx]
+                class_count[key] += 1
+            # Compute and add the total portion of loss contribution
+            for key, total in class_count.items():
+                if total > 0:
+                    perc = total/mini_batch_size  # total occurrences / mini-batch size
+                    class_loss[key] += loss.data[0]*perc  # loss * % of mini-batch
 
     print('Finished Training')
+
+    save_model(net)
+    print('Model saved.')
 
     print('2s wait before testing...')
     time.sleep(2)
@@ -308,13 +347,13 @@ if __name__ == "__main__":
         'Optimizer: {}'.format(str(optimizer)),
         'Loss Function: {}'.format(str(criterion))
     )
-    print(
-        'Accuracy of the network on the {} test images: {} %'.format(
-            train_count, math.ceil(score*100)/100
-        )
-    )
+    print('Accuracy of the network on the {} test images: {} %'.format(
+        train_count, math.ceil(score*100)/100
+    ))
     print(out)
     log(out)
+
+    print(list_class_loss(class_loss))
 
 # ___References___
 # [1] Convolutional Neural Networks (CNN): https://hooktube.com/watch?v=FTr3n7uBIuE
