@@ -268,10 +268,10 @@ if __name__ == "__main__":
             if i % 1000 == 0:  # print every 1000 mini-batches
                 curr_loss = running_loss / 1000
                 try:
-                    change = (prev_loss / curr_loss - 1) * 100  # % Change from last calculation
+                    change = -1 * (prev_loss / curr_loss - 1) * 100  # % Change from last calculation
                 except ZeroDivisionError:
                     change = 0.0
-                diff = prev_loss - curr_loss
+                diff = -1 * (prev_loss - curr_loss)
                 prev_loss = curr_loss
                 print('[%d, %5d] loss: %.3f change: %.3f difference: %.3f' %
                       (epoch + 1, i + 1, running_loss / 1000, change, diff))
