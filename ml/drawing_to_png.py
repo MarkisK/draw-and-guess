@@ -141,7 +141,10 @@ def build_image_folder(filetype='.bin', max=-1):
     for i, path in enumerate(datafolder.iterdir()):
         if not path.is_dir():
             if path.name.endswith(filetype):  # Ensure desired filetype
-                label = path.name[:path.name.rfind('.')]
+                name = path.name
+                if 'full_simplified_' in name:
+                    name = name[name.rfind('_')+1:]
+                label = name[:name.rfind('.')]
                 if not os.path.exists('./images/train'):
                     os.makedirs('./images/train')
                 if not os.path.exists('./images/test'):
@@ -164,7 +167,7 @@ def build_image_folder(filetype='.bin', max=-1):
     return
 
 
-build_image_folder('.ndjson', max=1000)
+build_image_folder('.ndjson', max=5000)
 print('finished building image folder')
 
 # Example:
