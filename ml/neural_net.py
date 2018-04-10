@@ -205,7 +205,7 @@ class Net(nn.Module):
         return x  # x.shape = [batch_size, total_classes]
 
 
-def make_guess(model, image_path, classes):
+def make_guess(model, image, classes):
     transform = transforms.Compose([
         transforms.Grayscale(),
         transforms.Resize((256, 256)),
@@ -214,7 +214,10 @@ def make_guess(model, image_path, classes):
         transforms.Normalize(mean=[0.485, 0.456, 0.406],
                              std=[0.229, 0.224, 0.225]),
     ])
-    img = Image.open(image_path)
+    if isinstance(image, type('')):  # is path string
+        img = Image.open(image)
+    else:
+        img = image
     tensor = transform(img).unsqueeze(0)
     _v = Variable(tensor).cuda()
     result = model(_v)
