@@ -80,7 +80,6 @@
 import datetime
 import math
 import pathlib
-import sys
 import time
 
 import torch
@@ -89,9 +88,9 @@ import torch.nn.functional as F
 import torch.optim as optim
 import torch.utils.data as data
 import torchvision.transforms as transforms
+from PIL import Image
 from torch.autograd import Variable
 from torchvision.datasets import ImageFolder
-
 
 run_time = datetime.datetime.now()
 
@@ -109,11 +108,27 @@ def get_class_count(file_type='.ndjson'):
     return count
 
 
+def get_class_list(file_type='.ndjson'):
+    classes = []
+    for p in pathlib.Path('data/').iterdir():
+        if p.name.endswith(file_type):
+            classes.append(p.name[p.name.rfind('_')+1:p.name.rfind('.')])
+    return classes
+
+
+def get_class_dict(file_type='.ndjson'):
+    classes = {}
+    for p in pathlib.Path('data/').iterdir():
+        if p.name.endswith(file_type):
+            classes[p.name[p.name.rfind('_')+1:p.name.rfind('.')]] = 0
+    return classes
+
+
 def train_image_count():
     count = 0
     train_dir = pathlib.Path('images/train/')
     for d in train_dir.iterdir():
-        for p in d.iterdir():
+        for _ in d.iterdir():
             count += 1
         return count
     return 0
@@ -128,6 +143,15 @@ def load_model(model, path):
     return
 
 
+def list_class_loss(cl):
+    print("Class Loss")
+    tups = [(k, v) for k, v in cl.items()]
+    tups.sort(key=lambda x: x[1])  # sort by second value in tuple
+    for tup in tups:
+        print('{0:20}: {1}'.format(tup[0], tup[1]))
+    return
+
+
 class Net(nn.Module):
     # This is the neural network.
     # nn is the pyTorch neural network module.
@@ -135,7 +159,7 @@ class Net(nn.Module):
     # we override functions to build the network
     def __init__(self, total_classes=10):
         self.total_classes = total_classes
-        self.reshape = 64 * 16 * 16
+        self.reshape = 64 * 25 * 25
         # The init function is where we setup the different layers
         # of the neural network.
         # We define them in the order we use them, by convention
@@ -147,15 +171,16 @@ class Net(nn.Module):
         # For example, conv1 has out=64, conv2 has in=64
         super(Net, self).__init__()  # Init the underlying neural network (nn.Module)
         self.conv0 = nn.Conv2d(1, 24, 1, stride=1).cuda()
-        self.conv1 = nn.Conv2d(24, 96, 10, stride=2).cuda()  # 2D convolution layer(in, out, kernel) [1]
-        self.pool1 = nn.MaxPool2d(8, 1).cuda()  # Max pooling layer(kernel_size, stride) [2]
-        self.conv2 = nn.Conv2d(96, 64, 8, stride=4).cuda()  # Another 2D convolution layer (in, out, kernel) [1]
-        self.fc1 = nn.Linear(self.reshape, 168).cuda()  # Linear transform (in, out) [4]
-        self.fc2 = nn.Linear(168, 84).cuda()
-        self.fc3 = nn.Linear(84, self.total_classes).cuda()  # Last layer need output neuron = to total_classes
-        self.drop = nn.Dropout2d(p=.1).cuda()  # Dropout [7]
+        self.conv1 = nn.Conv2d(24, 96, 3, padding=1).cuda()  # 2D convolution layer(in, out, kernel) [1]
+        self.pool1 = nn.MaxPool2d(2, 2).cuda()  # Max pooling layer(kernel_size, stride) [2]
+        self.pool2 = nn.MaxPool2d(4, 2).cuda()
+        self.conv2 = nn.Conv2d(96, 64, 8, padding=1).cuda()  # Another 2D convolution layer (in, out, kernel) [1]
+        self.fc1 = nn.Linear(self.reshape, 512).cuda()  # Linear transform (in, out) [4]
+        self.fc2 = nn.Linear(512, 512).cuda()
+        self.fc3 = nn.Linear(512, self.total_classes).cuda()  # Last layer need output neuron = to total_classes
+        self.drop = nn.Dropout2d(p=.2).cuda()  # Dropout [7]
         self.debug = [self.conv0, self.conv1, self.conv2,
-                      self.pool1, self.fc1, self.fc2, self.fc3,
+                      self.pool1, self.pool2, self.fc1, self.fc2, self.fc3,
                       self.drop, 'reshape: {}'.format(self.reshape)]
 
     def forward(self, x):
@@ -175,28 +200,40 @@ class Net(nn.Module):
         x = F.relu(self.fc1(x))  # Linear layer -> ReLU (activation) -> x
         x = self.drop(x)  # dropout [7]
         x = F.relu(self.fc2(x))  # Linear layer -> ReLU (activation) -> x
+        x = self.drop(x)
         x = self.fc3(x)  # Linear layer -> x
         return x  # x.shape = [batch_size, total_classes]
 
 
+def make_guess(model, image, classes):
+    transform = transforms.Compose([
+        transforms.Grayscale(),
+        transforms.Resize((256, 256)),
+        transforms.CenterCrop(224),
+        transforms.ToTensor(),
+        transforms.Normalize(mean=[0.485, 0.456, 0.406],
+                             std=[0.229, 0.224, 0.225]),
+    ])
+    if isinstance(image, type('')):  # is path string
+        img = Image.open(image)
+    else:
+        img = image
+    tensor = transform(img).unsqueeze(0)
+    _v = Variable(tensor).cuda()
+    result = model(_v)
+    _, predicted = torch.max(result.data, 1)
+    guess = classes[predicted[0]]
+    return guess
+
+
 if __name__ == "__main__":
+    mini_batch_size = 10
     # This is the transform applied to all images
     # The Normalize portion comes after it's turned into a tensor
     # I'm using the defaults from ResNet for the transform
     # The transforms can be anything, as long as the image
     # is normalized and all images as the same size
-    train_transform = transforms.Compose([
-        transforms.Grayscale(),
-        transforms.Resize((256, 256)),
-        transforms.CenterCrop(224),
-        transforms.RandomHorizontalFlip(),
-        transforms.RandomVerticalFlip(),
-        transforms.ToTensor(),
-        transforms.Normalize(mean=[0.485, 0.456, 0.406],
-                             std=[0.229, 0.224, 0.225]),
-    ])
-
-    test_transform = transforms.Compose([
+    transform = transforms.Compose([
         transforms.Grayscale(),
         transforms.Resize((256, 256)),
         transforms.CenterCrop(224),
@@ -207,21 +244,24 @@ if __name__ == "__main__":
 
     # Create the data loader (training images) and the test loader (test iamges)
     dataset = ImageFolder(root='./images/train',
-                          transform=test_transform)  # [6]
+                          transform=transform)  # [6]
     dataloader = data.DataLoader(dataset,
-                                 batch_size=10,
+                                 batch_size=mini_batch_size,
                                  shuffle=True,
                                  num_workers=2)
 
     testset = ImageFolder(root='./images/test',
-                          transform=test_transform)  # [6]
+                          transform=transform)  # [6]
     testloader = data.DataLoader(testset,
-                                 batch_size=10,
+                                 batch_size=mini_batch_size,
                                  shuffle=False,
                                  num_workers=2)
 
+    class_loss = get_class_dict()
+
     # Create instance of our neural network, untrained
     net = Net(get_class_count(file_type='.ndjson'))
+    # load_model(net, 'models/2018-04-09 20:13:48.191474.pth')
 
     # Create loss function
     criterion = nn.CrossEntropyLoss().cuda()
@@ -237,18 +277,18 @@ if __name__ == "__main__":
 
     # epoch is just the number of times we want to
     # train using all the training images
-    epochs = 3
+    epochs = 2
     prev_loss = 0.0
     for epoch in range(epochs):
         print('epoch ' + str(epoch))
         running_loss = 0.0  # Keeps track of how badly the network is classifying
         for i, data in enumerate(dataloader, 0):  # Iterate through the mini-batches
-            if i % 200 == 0:
-                print('{}: {}'.format('dataloader', i))
+            # if i % 200 == 0:
+            #     print('{}: {}'.format('dataloader', i))
             # get the inputs
             inputs, labels = data  # inputs = mini-batch images, labels = mini-batch labels
 
-            # wrap them in Variable
+            # wrap them in Variab   le
             # uncomment following and comment one after to enable GPU processing
             inputs, labels = Variable(inputs.cuda()), Variable(labels.cuda())
             # inputs, labels = Variable(inputs), Variable(labels)
@@ -263,7 +303,7 @@ if __name__ == "__main__":
             loss.backward()  # autograd automatic back-propagation [5]
             optimizer.step()  # optimization step
 
-            # # print statistics
+            # print statistics
             running_loss += loss.data[0]
             if i % 1000 == 0:  # print every 1000 mini-batches
                 curr_loss = running_loss / 1000
@@ -273,16 +313,32 @@ if __name__ == "__main__":
                     change = 0.0
                 diff = -1 * (prev_loss - curr_loss)
                 prev_loss = curr_loss
-                print('[%d, %5d] loss: %.3f change: %.3f difference: %.3f' %
-                      (epoch + 1, i + 1, running_loss / 1000, change, diff))
+                print('[{0}, {1}] loss: {2:.3f} change: {3:.3f}% difference: {4:.3f}'.format(
+                    epoch + 1, i + 1, running_loss / 1000, change, diff
+                ))
                 running_loss = 0.0
-            print(
-                'finished {0}. running_loss: {1} +{2:.2f}'.format(
-                    i, running_loss, loss.data[0]
-                )
-            )
+            print('finished {0}. running_loss: {1:16.10f} +{2:.2f}'.format(
+                i, running_loss, loss.data[0]
+            ))
+
+            # The following is an attempt to determine which
+            # classes cause the network the most trouble.
+            # Compute how often a label was seen in this mini-batch
+            class_count = get_class_dict()  # Holds count of label occurrence
+            for label in labels:
+                idx = label.data[0]
+                key = dataset.classes[idx]
+                class_count[key] += 1
+            # Compute and add the total portion of loss contribution
+            for key, total in class_count.items():
+                if total > 0:
+                    perc = total/mini_batch_size  # total occurrences / mini-batch size
+                    class_loss[key] += loss.data[0]*perc  # loss * % of mini-batch
 
     print('Finished Training')
+
+    save_model(net)
+    print('Model saved.')
 
     print('2s wait before testing...')
     time.sleep(2)
@@ -300,21 +356,22 @@ if __name__ == "__main__":
 
     train_count = train_image_count()
     score = 100 * correct / total
-    out = 'Score: {}\n{}\n{}\nConfig:\n\t{}\n\t{}\n\t'.format(
+    out = 'Score: {}\n{}\n{}\nConfig:\n\t{}\n\t{}\n\t{}\n\t'.format(
         score,
-        '{} train images'.format(train_count),
+        '{} train images'.format(train_count-1),
         '{} epochs'.format(epochs),
         '\n\t'.join([str(d) for d in net.debug]),
         'Optimizer: {}'.format(str(optimizer)),
-        'Loss Function: {}'.format(str(criterion))
+        'Loss Function: {}'.format('CrossEntropyLoss'),
+        'Class list: {}'.format(get_class_list())
     )
-    print(
-        'Accuracy of the network on the {} test images: {} %'.format(
-            train_count, math.ceil(score*100)/100
-        )
-    )
+    print('Accuracy of the network on the {} test images: {} %'.format(
+        train_count, math.ceil(score*100)/100
+    ))
     print(out)
     log(out)
+
+    print(list_class_loss(class_loss))
 
 # ___References___
 # [1] Convolutional Neural Networks (CNN): https://hooktube.com/watch?v=FTr3n7uBIuE

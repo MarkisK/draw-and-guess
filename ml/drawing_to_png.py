@@ -112,7 +112,7 @@ def get_line(x1, y1, x2, y2):
     return points
 
 
-def build_image_folder(filetype='.bin', max=-1):
+def build_image_folder(filetype='.bin', max=-1, offset=0):
     """
     Takes all .bin or .ndjson files found in data folder and builds the images folder
     example structure:
@@ -155,8 +155,10 @@ def build_image_folder(filetype='.bin', max=-1):
                     os.makedirs('./images/test/{}'.format(label))
                 unpack_func, key = (unpack_drawings, 'image') if filetype in '.bin' else (unpack_ndjson, 'drawing')
                 for idx, entry in enumerate(unpack_func(str(path))):
+                    if idx < offset:
+                        continue
                     if 0 < max < idx:
-                        if idx < max+(max*.25):
+                        if idx < max + ((max-offset)*.25):
                             create_image(entry[key], './images/test/{}/{}.png'.format(label, idx))
                             continue
                         else:
@@ -167,7 +169,7 @@ def build_image_folder(filetype='.bin', max=-1):
     return
 
 
-build_image_folder('.ndjson', max=5000)
+build_image_folder('.ndjson', max=15000, offset=5001)
 print('finished building image folder')
 
 # Example:
