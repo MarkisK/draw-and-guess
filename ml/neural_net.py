@@ -80,8 +80,6 @@
 import datetime
 import math
 import pathlib
-import re
-import sys
 import time
 
 import torch
@@ -90,9 +88,9 @@ import torch.nn.functional as F
 import torch.optim as optim
 import torch.utils.data as data
 import torchvision.transforms as transforms
+from PIL import Image
 from torch.autograd import Variable
 from torchvision.datasets import ImageFolder
-
 
 run_time = datetime.datetime.now()
 
@@ -110,6 +108,14 @@ def get_class_count(file_type='.ndjson'):
     return count
 
 
+def get_class_list(file_type='.ndjson'):
+    classes = []
+    for p in pathlib.Path('data/').iterdir():
+        if p.name.endswith(file_type):
+            classes.append(p.name[p.name.rfind('_')+1:p.name.rfind('.')])
+    return classes
+
+
 def get_class_dict(file_type='.ndjson'):
     classes = {}
     for p in pathlib.Path('data/').iterdir():
@@ -122,7 +128,7 @@ def train_image_count():
     count = 0
     train_dir = pathlib.Path('images/train/')
     for d in train_dir.iterdir():
-        for p in d.iterdir():
+        for _ in d.iterdir():
             count += 1
         return count
     return 0
@@ -153,7 +159,7 @@ class Net(nn.Module):
     # we override functions to build the network
     def __init__(self, total_classes=10):
         self.total_classes = total_classes
-        self.reshape = 64 * 7 * 7
+        self.reshape = 64 * 25 * 25
         # The init function is where we setup the different layers
         # of the neural network.
         # We define them in the order we use them, by convention
@@ -165,22 +171,22 @@ class Net(nn.Module):
         # For example, conv1 has out=64, conv2 has in=64
         super(Net, self).__init__()  # Init the underlying neural network (nn.Module)
         self.conv0 = nn.Conv2d(1, 24, 1, stride=1).cuda()
-        self.conv1 = nn.Conv2d(24, 96, 3, stride=1).cuda()  # 2D convolution layer(in, out, kernel) [1]
-        self.pool1 = nn.MaxPool2d(24, 4).cuda()  # Max pooling layer(kernel_size, stride) [2]
-        self.pool2 = nn.MaxPool2d(4, 1).cuda()
-        self.conv2 = nn.Conv2d(96, 64, 8, stride=4).cuda()  # Another 2D convolution layer (in, out, kernel) [1]
-        self.fc1 = nn.Linear(self.reshape, 168).cuda()  # Linear transform (in, out) [4]
-        self.fc2 = nn.Linear(168, 84).cuda()
-        self.fc3 = nn.Linear(84, self.total_classes).cuda()  # Last layer need output neuron = to total_classes
-        self.drop = nn.Dropout2d(p=.1).cuda()  # Dropout [7]
+        self.conv1 = nn.Conv2d(24, 96, 3, padding=1).cuda()  # 2D convolution layer(in, out, kernel) [1]
+        self.pool1 = nn.MaxPool2d(2, 2).cuda()  # Max pooling layer(kernel_size, stride) [2]
+        self.pool2 = nn.MaxPool2d(4, 2).cuda()
+        self.conv2 = nn.Conv2d(96, 64, 8, padding=1).cuda()  # Another 2D convolution layer (in, out, kernel) [1]
+        self.fc1 = nn.Linear(self.reshape, 512).cuda()  # Linear transform (in, out) [4]
+        self.fc2 = nn.Linear(512, 512).cuda()
+        self.fc3 = nn.Linear(512, self.total_classes).cuda()  # Last layer need output neuron = to total_classes
+        self.drop = nn.Dropout2d(p=.2).cuda()  # Dropout [7]
         self.debug = [self.conv0, self.conv1, self.conv2,
                       self.pool1, self.pool2, self.fc1, self.fc2, self.fc3,
                       self.drop, 'reshape: {}'.format(self.reshape)]
 
     def forward(self, x):
         x = self.pool1(F.relu(self.conv0(x)))
-        x = self.pool2(F.relu(self.conv1(x)))  # Conv Layer1 -> ReLU (activation) -> Max Pool -> x
-        x = self.pool2(F.relu(self.conv2(x)))  # Conv Layer2 -> ReLU (activation) -> Max Pool -> x
+        x = self.pool1(F.relu(self.conv1(x)))  # Conv Layer1 -> ReLU (activation) -> Max Pool -> x
+        x = self.pool1(F.relu(self.conv2(x)))  # Conv Layer2 -> ReLU (activation) -> Max Pool -> x
         # The following line transforms the dimension to be
         # 128 * 12 * 12 columns and however many rows fit
         # that many columns. -1 will end up being the batch size
@@ -194,8 +200,27 @@ class Net(nn.Module):
         x = F.relu(self.fc1(x))  # Linear layer -> ReLU (activation) -> x
         x = self.drop(x)  # dropout [7]
         x = F.relu(self.fc2(x))  # Linear layer -> ReLU (activation) -> x
+        x = self.drop(x)
         x = self.fc3(x)  # Linear layer -> x
         return x  # x.shape = [batch_size, total_classes]
+
+
+def make_guess(model, image_path, classes):
+    transform = transforms.Compose([
+        transforms.Grayscale(),
+        transforms.Resize((256, 256)),
+        transforms.CenterCrop(224),
+        transforms.ToTensor(),
+        transforms.Normalize(mean=[0.485, 0.456, 0.406],
+                             std=[0.229, 0.224, 0.225]),
+    ])
+    img = Image.open(image_path)
+    tensor = transform(img).unsqueeze(0)
+    _v = Variable(tensor).cuda()
+    result = model(_v)
+    _, predicted = torch.max(result.data, 1)
+    guess = classes[predicted[0]]
+    return guess
 
 
 if __name__ == "__main__":
@@ -205,18 +230,7 @@ if __name__ == "__main__":
     # I'm using the defaults from ResNet for the transform
     # The transforms can be anything, as long as the image
     # is normalized and all images as the same size
-    train_transform = transforms.Compose([
-        transforms.Grayscale(),
-        transforms.Resize((256, 256)),
-        transforms.CenterCrop(224),
-        transforms.RandomHorizontalFlip(),
-        transforms.RandomVerticalFlip(),
-        transforms.ToTensor(),
-        transforms.Normalize(mean=[0.485, 0.456, 0.406],
-                             std=[0.229, 0.224, 0.225]),
-    ])
-
-    test_transform = transforms.Compose([
+    transform = transforms.Compose([
         transforms.Grayscale(),
         transforms.Resize((256, 256)),
         transforms.CenterCrop(224),
@@ -227,14 +241,14 @@ if __name__ == "__main__":
 
     # Create the data loader (training images) and the test loader (test iamges)
     dataset = ImageFolder(root='./images/train',
-                          transform=test_transform)  # [6]
+                          transform=transform)  # [6]
     dataloader = data.DataLoader(dataset,
                                  batch_size=mini_batch_size,
                                  shuffle=True,
                                  num_workers=2)
 
     testset = ImageFolder(root='./images/test',
-                          transform=test_transform)  # [6]
+                          transform=transform)  # [6]
     testloader = data.DataLoader(testset,
                                  batch_size=mini_batch_size,
                                  shuffle=False,
@@ -244,6 +258,7 @@ if __name__ == "__main__":
 
     # Create instance of our neural network, untrained
     net = Net(get_class_count(file_type='.ndjson'))
+    # load_model(net, 'models/2018-04-09 20:13:48.191474.pth')
 
     # Create loss function
     criterion = nn.CrossEntropyLoss().cuda()
@@ -259,8 +274,7 @@ if __name__ == "__main__":
 
     # epoch is just the number of times we want to
     # train using all the training images
-    epochs = 1
-
+    epochs = 2
     prev_loss = 0.0
     for epoch in range(epochs):
         print('epoch ' + str(epoch))
@@ -271,7 +285,7 @@ if __name__ == "__main__":
             # get the inputs
             inputs, labels = data  # inputs = mini-batch images, labels = mini-batch labels
 
-            # wrap them in Variable
+            # wrap them in Variab   le
             # uncomment following and comment one after to enable GPU processing
             inputs, labels = Variable(inputs.cuda()), Variable(labels.cuda())
             # inputs, labels = Variable(inputs), Variable(labels)
@@ -286,7 +300,7 @@ if __name__ == "__main__":
             loss.backward()  # autograd automatic back-propagation [5]
             optimizer.step()  # optimization step
 
-            # # print statistics
+            # print statistics
             running_loss += loss.data[0]
             if i % 1000 == 0:  # print every 1000 mini-batches
                 curr_loss = running_loss / 1000
@@ -300,14 +314,14 @@ if __name__ == "__main__":
                     epoch + 1, i + 1, running_loss / 1000, change, diff
                 ))
                 running_loss = 0.0
-            print('finished {0}. running_loss: {1:20.10f} +{2:.2f}'.format(
+            print('finished {0}. running_loss: {1:16.10f} +{2:.2f}'.format(
                 i, running_loss, loss.data[0]
             ))
 
             # The following is an attempt to determine which
             # classes cause the network the most trouble.
             # Compute how often a label was seen in this mini-batch
-            class_count = get_class_dict()  # Hold count of label occurrence
+            class_count = get_class_dict()  # Holds count of label occurrence
             for label in labels:
                 idx = label.data[0]
                 key = dataset.classes[idx]
@@ -339,13 +353,14 @@ if __name__ == "__main__":
 
     train_count = train_image_count()
     score = 100 * correct / total
-    out = 'Score: {}\n{}\n{}\nConfig:\n\t{}\n\t{}\n\t'.format(
+    out = 'Score: {}\n{}\n{}\nConfig:\n\t{}\n\t{}\n\t{}\n\t'.format(
         score,
-        '{} train images'.format(train_count),
+        '{} train images'.format(train_count-1),
         '{} epochs'.format(epochs),
         '\n\t'.join([str(d) for d in net.debug]),
         'Optimizer: {}'.format(str(optimizer)),
-        'Loss Function: {}'.format(str(criterion))
+        'Loss Function: {}'.format('CrossEntropyLoss'),
+        'Class list: {}'.format(get_class_list())
     )
     print('Accuracy of the network on the {} test images: {} %'.format(
         train_count, math.ceil(score*100)/100
