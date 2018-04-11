@@ -1,8 +1,11 @@
+
+
 var lc = LC.init(document.getElementById("lc"), {
     imageURLPrefix: '../static/_assets/lc-images',
-    toolbarPosition: 'bottom',
-    defaultStrokeWidth: 3,
-    strokeWidths: [1, 2, 3, 5, 30]
+    toolbarPosition: 'hidden',
+    keyboardShortcuts: false,
+    defaultStrokeWidth: 2,
+    tools: [LC.tools.Pencil, LC.tools.Eraser]
 });
 
 function jsonify() {
