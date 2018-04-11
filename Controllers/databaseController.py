@@ -21,9 +21,15 @@ class DataBaseController:
 
     def insert_drawing(self):
         picture = DGObjectModel()
-        picture.parse_json_request()
-        self.db.insert(picture)
+        print(picture)
+        #picture.parse_json_request()
+        self.db.insert(picture.data)
         return True
 
     def get_all_drawings(self):
         return self.db.find()
+
+
+d = DataBaseController()
+
+print(d.insert_drawing())
