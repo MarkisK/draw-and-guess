@@ -14,9 +14,9 @@ This acts as a layout for any pages to standardized common elements across the s
         <!-- Local styles -->
         <link rel="stylesheet" type="text/css" href="../static/style.css" >
 
-        <script >
-            document.getElementById("t").innerHTML = new Date();
-        </script>
+        <script >document.getElementById("t").innerHTML = new Date();</script>
+        <script src="../static/_js_libs/react-0.14.3.js"></script>
+        <script src="../static/_js_libs/jquery-1.8.2.js"></script>
     </head>
     <body class="text-center">
         {% include 'includes/_navbar.html' %} <!-- will be included in all pages using this layout -->
