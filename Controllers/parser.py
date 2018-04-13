@@ -1,4 +1,5 @@
 # import json
+# Parser need to create information for neural
 from pprint import pprint
 
 
