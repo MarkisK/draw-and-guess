@@ -7,6 +7,7 @@
             <ins> WELCOME TO DRAW AND GUESS</ins>
         </h1>
     </div>
+
     <h2 style="color:blue;font-family: courier" title="explanation"> Application Specifications</h2>
 
     <p>
@@ -15,29 +16,26 @@
         -Draw and Guess should correctly state the shape that is drawn<br>
         -Draw and Guess should learn various shapes over continuous usage
 
-    <div class="class=cover-container d-flex h-100 p-3 mx-auto flex-column">
-        <!-- canvas -->
+    <!---Canvas -->
+    <!-- TODO restrict canvas dimensions -->
+    <div class="fs-container">
+        <div class="class=cover-container d-flex h-100 p-3 mx-auto flex-column" id="lc"></div>
         <link href="../static/_assets/literallycanvas.css" rel="stylesheet">
-        <div class="fs-container">
-            <div id="lc"></div>
-
-            <script src="../static/_js_libs/react-0.14.3.js"></script>
-            <script src="../static/_js_libs/literallycanvas.js"></script>
-            <script src="../static/canvas_module.js"></script>
-        </div>
-
-        <!-- canvas object output - for dev purposes until db routing is configured -->
-        <div>
-            <!-- this will be the "guess" button -->
-            <button onclick="jsonify()">JSONify</button>
-        </div>
-        <div>
-            <!-- clears canvas -->
-            <button onclick="lc.clear()">Clear</button>
-        </div>
+        <script src="../static/_js_libs/literallycanvas.js"></script>
+        <script src="../static/canvas_module.js"></script>
     </div>
 
+    <!-- Buttons -->
+    <div>
+        <button id="clear" class="btn btn-sm btn-outline-secondary" onclick="lc.clear()">Clear</button>
+        <button id="submit" class="btn btn-primary my-2">Guess!</button>
+    </div>
+
+    <!-- Guess Result -->
     <h2>Data Output:</h2>
 
-    <div id="output"></div>
+    <div id="output"></div> <!-- for dev only -->
+
+    <div id="guess"></div>
+
 {% endblock %}
