@@ -3,22 +3,23 @@ var lc = LC.init(document.getElementById("lc"), {
     imageURLPrefix: '../static/_assets/lc-images',
     toolbarPosition: 'hidden',
     keyboardShortcuts: false,
-    defaultStrokeWidth: 2,
+    defaultStrokeWidth: 1,
     tools: [LC.tools.Pencil, LC.tools.Eraser]
 });
 
 
 // POST Drawing to Flask
 $(function () {
-    $('#submit').click(function () {  // Set to run when button with id 'guess' is clicked
-
-        var image_data = JSON.stringify(lc.getSnapshot(['shapes', 'imageSize', 'position', 'scale']));  //gets image from canvas
+    $('#submit').click(function (e) {  // Set to run when button with id 'guess' is clicked
+        e.preventDefault();
+        var image_export = lc.getImage().toDataURL();  // base64 PNG image
 
         $.ajax({
             url: '/',
-            data: image_data,
+            data: {
+                base64: image_export
+            },
             type: 'POST',
-            contentType: "application/json; charset=utf-8",
             success: function () {
                 alert('POSTed')
             },
