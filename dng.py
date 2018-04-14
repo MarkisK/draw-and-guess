@@ -1,8 +1,15 @@
-from flask import Flask, render_template, request
+import datetime
+
+from flask import Flask, render_template, request, jsonify
 import base64
 from PIL import Image
 
+from ml.neural_net import make_guess, load_model, Net
+
 app = Flask(__name__)
+# Create and load pre-trained neural network
+net = Net(49)
+load_model(net, path='ml/models/2018-04-10 09:16:59.032209.pth')
 
 
 def convert_image(image_path):
@@ -33,18 +40,20 @@ def index():
         imgstr = request.form['base64']
         imgstr = imgstr[imgstr.find(',')+1:]
         imgdata = base64.b64decode(imgstr)
-        filename = 'testing.png'
-        out_path = 'images/{}'.format(filename)
+        out_path = 'user_images/{}.png'.format(datetime.datetime.now())
         with open(out_path, 'wb') as f:
             f.write(imgdata)
         path = convert_image(out_path)
-        # TODO (David-Mc): make the guess
+        guess = make_guess(model=net, image=path)
+        return jsonify(result=guess)
 
     return render_template('index.html')
+
 
 @app.route('/about')
 def about():
     return render_template('about.html')
+
 
 if __name__ == "__main__":
     # disable debug mode for production

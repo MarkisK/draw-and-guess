@@ -4,7 +4,8 @@ var lc = LC.init(document.getElementById("lc"), {
     toolbarPosition: 'hidden',
     keyboardShortcuts: false,
     defaultStrokeWidth: 1,
-    tools: [LC.tools.Pencil, LC.tools.Eraser]
+    tools: [LC.tools.Pencil, LC.tools.Eraser],
+    imageSize: {width: 256, height: 256}
 });
 
 
@@ -20,8 +21,8 @@ $(function () {
                 base64: image_export
             },
             type: 'POST',
-            success: function () {
-                alert('POSTed')
+            success: function (response) {
+                alert('Guess: ' + response.result)
             },
             error: function () {
                 alert('error')

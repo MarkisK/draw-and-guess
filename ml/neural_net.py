@@ -102,7 +102,7 @@ def log(message):
 
 def get_class_count(file_type='.ndjson'):
     count = 0
-    for p in pathlib.Path('data/').iterdir():
+    for p in pathlib.Path('ml/data/').iterdir():
         if p.name.endswith(file_type):
             count += 1
     return count
@@ -110,7 +110,7 @@ def get_class_count(file_type='.ndjson'):
 
 def get_class_list(file_type='.ndjson'):
     classes = []
-    for p in pathlib.Path('data/').iterdir():
+    for p in pathlib.Path('ml/data/').iterdir():
         if p.name.endswith(file_type):
             classes.append(p.name[p.name.rfind('_')+1:p.name.rfind('.')])
     return classes
@@ -118,7 +118,7 @@ def get_class_list(file_type='.ndjson'):
 
 def get_class_dict(file_type='.ndjson'):
     classes = {}
-    for p in pathlib.Path('data/').iterdir():
+    for p in pathlib.Path('ml/data/').iterdir():
         if p.name.endswith(file_type):
             classes[p.name[p.name.rfind('_')+1:p.name.rfind('.')]] = 0
     return classes
@@ -126,7 +126,7 @@ def get_class_dict(file_type='.ndjson'):
 
 def train_image_count():
     count = 0
-    train_dir = pathlib.Path('images/train/')
+    train_dir = pathlib.Path('ml/images/train/')
     for d in train_dir.iterdir():
         for _ in d.iterdir():
             count += 1
@@ -134,7 +134,7 @@ def train_image_count():
     return 0
 
 
-def save_model(model, path='models/{}.pth'.format(run_time)):
+def save_model(model, path='ml/models/{}.pth'.format(run_time)):
     return torch.save(model.state_dict(), path)
 
 
@@ -205,7 +205,23 @@ class Net(nn.Module):
         return x  # x.shape = [batch_size, total_classes]
 
 
-def make_guess(model, image, classes):
+def make_guess(model, image, classes=None):
+    if classes is None:
+        classes = ['apple', 'axe', 'banana', 'baseball',
+                   'book', 'bucket', 'car', 'cat',
+                   'church', 'circle', 'clock', 'cloud',
+                   'coffee cup', 'cookie', 'cow', 'diamond',
+                   'donut', 'envelope', 'fork',
+                   'hand', 'hexagon', 'hockey stick',
+                   'hourglass', 'house', 'ice cream',
+                   'jail', 'knife', 'ladder', 'leaf',
+                   'light bulb', 'lightning', 'line',
+                   'lollipop', 'microphone', 'moon',
+                   'mountain', 'oven', 'pizza',
+                   'power outlet', 'sandwich', 'shovel',
+                   'smiley face', 'square', 'star', 'sun',
+                   'teddy-bear', 'toaster', 'tree']
+
     transform = transforms.Compose([
         transforms.Grayscale(),
         transforms.Resize((256, 256)),

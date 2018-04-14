@@ -10,7 +10,8 @@ h1 {
 }
 
 .fs-container {
-    width: 800px;
+    /*width: 600px;*/
+    height: 600px;
     margin: auto;
     border: 1px solid #555;
 }
