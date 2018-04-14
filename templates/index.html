@@ -1,44 +1,41 @@
-{%  extends 'layout.html' %} <!-- extends the default layout page -->
+{% extends 'layout.html' %} <!-- extends the default layout page -->
 
+<!-- content specific to this page's body -->
+{% block body %}
+    <div class="jumbotron jumbotron">
+        <h1 style="text-align:center; color:blue" title="Ernest, Sugar, Medwards, David, Markis, Nicholas">
+            <ins> WELCOME TO DRAW AND GUESS</ins>
+        </h1>
+    </div>
 
-    <!-- content specific to this page's body -->
-    {% block body %}
+    <h2 style="color:blue;font-family: courier" title="explanation"> Application Specifications</h2>
 
-        <h1 style= "text-align:center; color:blue"title= "Ernest, Sugar, Medwards, David, Markis, Nicholas"><ins> WELCOME TO DRAW AND GUESS</ins></h1>
-        <h2 style= "color:blue;font-family: courier" title="explanation"> Application Specifications</h2>
+    <p>
+        -User should be able to draw any shape<br>
+        -User should be able to navigate easily through web application<br>
+        -Draw and Guess should correctly state the shape that is drawn<br>
+        -Draw and Guess should learn various shapes over continuous usage
 
-        <p>
-            -User should be able to draw any shape<br>
-            -User should be able to navigate easily through web application<br>
-            -Draw and Guess should correctly state the shape that is drawn<br>
-            -Draw and Guess should learn various shapes over continuous usage
+    <!---Canvas -->
+    <!-- TODO restrict canvas dimensions -->
+    <div class="fs-container">
+        <div class="class=cover-container d-flex h-100 p-3 mx-auto flex-column" id="lc"></div>
+        <link href="../static/_assets/literallycanvas.css" rel="stylesheet">
+        <script src="../static/_js_libs/literallycanvas.js"></script>
+        <script src="../static/canvas_module.js"></script>
+    </div>
 
-        </p>
-{#        <a href= "table.html" target="_self"></a>#}
+    <!-- Buttons -->
+    <div>
+        <button id="clear" class="btn btn-sm btn-outline-secondary" onclick="lc.clear()">Clear</button>
+        <button id="submit" class="btn btn-primary my-2">Guess!</button>
+    </div>
 
-            <!-- canvas -->
-                <link href="../static/_assets/literallycanvas.css" rel="stylesheet">
+    <!-- Guess Result -->
+    <h2>Data Output:</h2>
 
-                <!-- todo configure the tools available in the canvas -->
+    <div id="output"></div> <!-- for dev only -->
 
+    <div id="guess"></div>
 
-                <div class="fs-container">
-                    <div id="lc"></div>
-
-                    <script src="../static/_js_libs/react-0.14.3.js"></script>
-                    <script src="../static/_js_libs/literallycanvas.js"></script>
-                    <script src="../static/canvas_module.js"></script>
-                </div>
-                 <!-- canvas object output - for dev purposes until db routing is configured -->
-                <div>
-                    <button onclick="jsonify()">JSONify</button>
-                </div>
-                <div id="output"></div>
-
-{#        <button onclick="document.getElementById('demo').innerHTML= 'Drawing is fun'"> Open</button>#}
-
-        <address>Contact:<br>
-        Ernest<br> Sugar <br>Medwards<br> David<br> Markis<br> Nicholas <br>Java/html/javaScript programmer<br> University of Maryland<br> Maryland<br> USA</address>
-        <a href= "html_table.asp" style="text-align:center" target="_self">www.menasu.com</a>
-
-{%  endblock %}
+{% endblock %}

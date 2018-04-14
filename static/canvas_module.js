@@ -1,11 +1,38 @@
+// Canvas init
 var lc = LC.init(document.getElementById("lc"), {
     imageURLPrefix: '../static/_assets/lc-images',
-    toolbarPosition: 'bottom',
-    defaultStrokeWidth: 3,
-    strokeWidths: [1, 2, 3, 5, 30]
+    toolbarPosition: 'hidden',
+    keyboardShortcuts: false,
+    defaultStrokeWidth: 1,
+    tools: [LC.tools.Pencil, LC.tools.Eraser]
 });
 
-function jsonify() {
-    var obj = JSON.stringify(lc.getSnapshot(['shapes', 'imageSize', 'position', 'scale']))
-    document.getElementById("output").innerHTML = obj;
-}
+
+// POST Drawing to Flask
+$(function () {
+    $('#submit').click(function (e) {  // Set to run when button with id 'guess' is clicked
+        e.preventDefault();
+        var image_export = lc.getImage().toDataURL();  // base64 PNG image
+
+        $.ajax({
+            url: '/',
+            data: {
+                base64: image_export
+            },
+            type: 'POST',
+            success: function () {
+                alert('POSTed')
+            },
+            error: function () {
+                alert('error')
+            }
+        });
+    });
+});
+
+
+// uncomment this to debug straight to page (not advised)
+// function postImage() {
+//     var obj = JSON.stringify(lc.getSnapshot(['shapes', 'imageSize', 'position', 'scale']))
+//     document.getElementById("output").innerHTML = obj;
+// }
