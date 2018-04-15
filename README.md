@@ -25,6 +25,20 @@ Using Python 3.6
 3. `flask run`
 4. open `127.0.0.1:5000` in browser
 
+# PyTorch setup (Linux or OS X)
+#### python 3.5+
+1. `pip3 install torch torchvision`
+# PyTorch Setup (Windows)
+pyTorch is not officially supported on Windows. 
+As such, we will not be explicitly supporting Windows for this project.
+see `https://www.superdatascience.com/pytorch/` for an unofficial 
+pyTorch setup guide on Windows.
+
+# Setting up the pre-trained model
+1. Download the model archive from `https://mega.nz/#!dhRT2JJQ!WleVDJnk1vnTyDTobcMd8w41gImTFD6-Xf7AXvc8rkY`
+2. Extract the `.pth` file into ml/models/ folder
+3. Run `dng.py`
+
 # Using Version Control on pyCharm
 In the bottom right hand corner of your IDE, you will see two arrows (One face north and the other facing south)
 When clicking these arrows you will see various option.

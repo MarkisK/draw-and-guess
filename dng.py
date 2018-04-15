@@ -41,6 +41,7 @@ def index():
         imgstr = imgstr[imgstr.find(',')+1:]
         imgdata = base64.b64decode(imgstr)
         out_path = 'user_images/{}.png'.format(datetime.datetime.now())
+        out_path = out_path.replace(':', '_')  # Windows doesn't like `:` because it's stupid
         with open(out_path, 'wb') as f:
             f.write(imgdata)
         path = convert_image(out_path)
