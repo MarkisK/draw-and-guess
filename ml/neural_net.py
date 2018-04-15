@@ -139,7 +139,7 @@ def save_model(model, path='ml/models/{}.pth'.format(run_time)):
 
 
 def load_model(model, path):
-    model.load_state_dict(torch.load(path))
+    model.load_state_dict(torch.load(path, map_location=lambda storage, loc: storage))
     return
 
 
@@ -170,15 +170,15 @@ class Net(nn.Module):
         # For each layer, the out and in values need to match
         # For example, conv1 has out=64, conv2 has in=64
         super(Net, self).__init__()  # Init the underlying neural network (nn.Module)
-        self.conv0 = nn.Conv2d(1, 24, 1, stride=1).cuda()
-        self.conv1 = nn.Conv2d(24, 96, 3, padding=1).cuda()  # 2D convolution layer(in, out, kernel) [1]
-        self.pool1 = nn.MaxPool2d(2, 2).cuda()  # Max pooling layer(kernel_size, stride) [2]
-        self.pool2 = nn.MaxPool2d(4, 2).cuda()
-        self.conv2 = nn.Conv2d(96, 64, 8, padding=1).cuda()  # Another 2D convolution layer (in, out, kernel) [1]
-        self.fc1 = nn.Linear(self.reshape, 512).cuda()  # Linear transform (in, out) [4]
-        self.fc2 = nn.Linear(512, 512).cuda()
-        self.fc3 = nn.Linear(512, self.total_classes).cuda()  # Last layer need output neuron = to total_classes
-        self.drop = nn.Dropout2d(p=.2).cuda()  # Dropout [7]
+        self.conv0 = nn.Conv2d(1, 24, 1, stride=1)
+        self.conv1 = nn.Conv2d(24, 96, 3, padding=1)  # 2D convolution layer(in, out, kernel) [1]
+        self.pool1 = nn.MaxPool2d(2, 2)  # Max pooling layer(kernel_size, stride) [2]
+        self.pool2 = nn.MaxPool2d(4, 2)
+        self.conv2 = nn.Conv2d(96, 64, 8, padding=1)  # Another 2D convolution layer (in, out, kernel) [1]
+        self.fc1 = nn.Linear(self.reshape, 512)  # Linear transform (in, out) [4]
+        self.fc2 = nn.Linear(512, 512)
+        self.fc3 = nn.Linear(512, self.total_classes)  # Last layer need output neuron = to total_classes
+        self.drop = nn.Dropout2d(p=.2)  # Dropout [7]
         self.debug = [self.conv0, self.conv1, self.conv2,
                       self.pool1, self.pool2, self.fc1, self.fc2, self.fc3,
                       self.drop, 'reshape: {}'.format(self.reshape)]

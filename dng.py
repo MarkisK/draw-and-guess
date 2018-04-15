@@ -4,12 +4,12 @@ from flask import Flask, render_template, request, jsonify
 import base64
 from PIL import Image
 
-from ml.neural_net.py import make_guess, load_model, Net
+from neural_net import make_guess, load_model, Net
 
 app = Flask(__name__)
 # Create and load pre-trained neural network
 net = Net(49)
-load_model(net, path='/Users/landstown22/PycharmProjects/draw-and-guess/ml/models/2018-04-10 00:08:16.607028.pth')
+load_model(net, path='/Users/landstown22/PycharmProjects/draw-and-guess/ml/models/trained_model_49.pth')
 
 
 def convert_image(image_path):
