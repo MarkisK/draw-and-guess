@@ -35,7 +35,7 @@ see `https://www.superdatascience.com/pytorch/` for an unofficial
 pyTorch setup guide on Windows.
 
 # Setting up the pre-trained model
-1. Download the model archive from `https://mega.nz/#!dhRT2JJQ!WleVDJnk1vnTyDTobcMd8w41gImTFD6-Xf7AXvc8rkY`
+1. Download the model archive from `https://mega.nz/#!YU8l2ChT!VEKIfNNfL7fAfoRmKFJhU7K__XTTJw2GLOUTBkFVOX8`
 2. Extract the `.pth` file into ml/models/ folder
 3. Run `dng.py`
 
