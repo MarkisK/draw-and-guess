@@ -8,6 +8,8 @@ var lc = LC.init(document.getElementById("lc"), {
     imageSize: {width: 256, height: 256}
 });
 
+lc.setZoom(2);
+
 
 // POST Drawing to Flask
 $(function () {
