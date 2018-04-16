@@ -170,15 +170,15 @@ class Net(nn.Module):
         # For each layer, the out and in values need to match
         # For example, conv1 has out=64, conv2 has in=64
         super(Net, self).__init__()  # Init the underlying neural network (nn.Module)
-        self.conv0 = nn.Conv2d(1, 24, 1, stride=1)()
-        self.conv1 = nn.Conv2d(24, 96, 3, padding=1)()  # 2D convolution layer(in, out, kernel) [1]
-        self.pool1 = nn.MaxPool2d(2, 2)()  # Max pooling layer(kernel_size, stride) [2]
-        self.pool2 = nn.MaxPool2d(4, 2)()
-        self.conv2 = nn.Conv2d(96, 64, 8, padding=1)()  # Another 2D convolution layer (in, out, kernel) [1]
-        self.fc1 = nn.Linear(self.reshape, 512)()  # Linear transform (in, out) [4]
-        self.fc2 = nn.Linear(512, 512)()
-        self.fc3 = nn.Linear(512, self.total_classes)()  # Last layer need output neuron = to total_classes
-        self.drop = nn.Dropout2d(p=.2)()  # Dropout [7]
+        self.conv0 = nn.Conv2d(1, 24, 1, stride=1)
+        self.conv1 = nn.Conv2d(24, 96, 3, padding=1)  # 2D convolution layer(in, out, kernel) [1]
+        self.pool1 = nn.MaxPool2d(2, 2)  # Max pooling layer(kernel_size, stride) [2]
+        self.pool2 = nn.MaxPool2d(4, 2)
+        self.conv2 = nn.Conv2d(96, 64, 8, padding=1)  # Another 2D convolution layer (in, out, kernel) [1]
+        self.fc1 = nn.Linear(self.reshape, 512)  # Linear transform (in, out) [4]
+        self.fc2 = nn.Linear(512, 512)
+        self.fc3 = nn.Linear(512, self.total_classes)  # Last layer need output neuron = to total_classes
+        self.drop = nn.Dropout2d(p=.2)  # Dropout [7]
         self.debug = [self.conv0, self.conv1, self.conv2,
                       self.pool1, self.pool2, self.fc1, self.fc2, self.fc3,
                       self.drop, 'reshape: {}'.format(self.reshape)]
@@ -235,7 +235,7 @@ def make_guess(model, image, classes=None):
     else:
         img = image
     tensor = transform(img).unsqueeze(0)
-    _v = Variable(tensor)()
+    _v = Variable(tensor)
     result = model(_v)
     _, predicted = torch.max(result.data, 1)
     guess = classes[predicted[0]]
@@ -280,8 +280,8 @@ if __name__ == "__main__":
     # load_model(net, 'models/2018-04-09 20:13:48.191474.pth')
 
     # Create loss function
-    criterion = nn.CrossEntropyLoss()()
-    # criterion = nn.MSELoss()()
+    criterion = nn.CrossEntropyLoss()
+    # criterion = nn.MSELoss()
 
     # Create optimizer (gradient descent)
     # optimizer = optim.SGD(net.parameters(), lr=0.001, momentum=0.9)
@@ -306,7 +306,7 @@ if __name__ == "__main__":
 
             # wrap them in Variab   le
             # uncomment following and comment one after to enable GPU processing
-            inputs, labels = Variable(inputs()), Variable(labels())
+            inputs, labels = Variable(inputs), Variable(labels)
             # inputs, labels = Variable(inputs), Variable(labels)
             # Variable's are used to allow for automatic back propagation (shown later) [5]
 
@@ -364,7 +364,7 @@ if __name__ == "__main__":
     total = 0
     for data in testloader:
         images, labels = data
-        images, labels = images(), labels()
+        images, labels = images, labels
         outputs = net(Variable(images))
         _, predicted = torch.max(outputs.data, 1)
         total += labels.size(0)
