@@ -235,7 +235,7 @@ def make_guess(model, image, classes=None):
     else:
         img = image
     tensor = transform(img).unsqueeze(0)
-    _v = Variable(tensor).cuda()
+    _v = Variable(tensor)
     result = model(_v)
     _, predicted = torch.max(result.data, 1)
     guess = classes[predicted[0]]

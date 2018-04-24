@@ -9,7 +9,7 @@ from neural_net import make_guess, load_model, Net
 app = Flask(__name__)
 # Create and load pre-trained neural network
 net = Net(49)
-load_model(net, path='/Users/landstown22/PycharmProjects/draw-and-guess/ml/models/trained_model_49.pth')
+load_model(net, path='./ml/models/trained_model_49.pth')
 
 
 def convert_image(image_path):
