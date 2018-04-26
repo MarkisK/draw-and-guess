@@ -4,10 +4,11 @@ var lc = LC.init(document.getElementById("lc"), {
     toolbarPosition: 'hidden',
     keyboardShortcuts: false,
     defaultStrokeWidth: 1,
-    tools: [LC.tools.Pencil, LC.tools.Eraser],
+    // tools: [LC.tools.Pencil, LC.tools.Eraser],
     imageSize: {width: 256, height: 256}
 });
 
+lc.setZoom(2);
 
 // POST Drawing to Flask
 $(function () {
