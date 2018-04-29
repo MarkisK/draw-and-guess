@@ -8,11 +8,13 @@ from ml.neural_net import Net, load_model, make_guess, get_class_list
 #     Build using drawing_to_png file (change image output amount as desired).
 #     Put pretrained model in models/ folder (dont change name).
 #     Run guess.py
-#     Model Download: https://mega.nz/#!dhRT2JJQ!WleVDJnk1vnTyDTobcMd8w41gImTFD6-Xf7AXvc8rkY
+#     Model Download: https://mega.nz/#!YU8l2ChT!VEKIfNNfL7fAfoRmKFJhU7K__XTTJw2GLOUTBkFVOX8
 #     data.tar.gz Download: https://mega.nz/#!l9Y01JjY!j0A4kvkN1M1Va-1uSvcO3e9fhtQnDgetIoxRQePbXqs
 
-net = Net(49)
-load_model(net, path='models/2018-04-10 09:16:59.032209.pth')
+MODEL_NAME = 'trained_model_49.pth'  # The name of your model as found in ml/models/ folder
+
+net = Net(total_classes=49)
+load_model(net, path='models/{}'.format(MODEL_NAME))
 image_to_test_path = 'images/test/banana/15001.png'
 classes = get_class_list('.ndjson')
 for i, c in enumerate(classes):

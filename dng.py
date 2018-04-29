@@ -6,10 +6,17 @@ from PIL import Image
 
 from neural_net import make_guess, load_model, Net
 
+# Model Download: https://mega.nz/#!YU8l2ChT!VEKIfNNfL7fAfoRmKFJhU7K__XTTJw2GLOUTBkFVOX8
+# Once downloaded, extract the .pth file to ml/models/ folder
+
+MODEL_NAME = 'trained_model_49.pth'  # The name of your model as found in ml/models/ folder
+
 app = Flask(__name__)
 # Create and load pre-trained neural network
-net = Net(49)
-load_model(net, path='./ml/models/trained_model_49.pth')
+
+net = Net(total_classes=49)
+load_model(net, path='ml/models/{}'.format(MODEL_NAME))
+
 
 
 def convert_image(image_path):
@@ -41,6 +48,7 @@ def index():
         imgstr = imgstr[imgstr.find(',')+1:]
         imgdata = base64.b64decode(imgstr)
         out_path = 'user_images/{}.png'.format(datetime.datetime.now())
+        out_path = out_path.replace(':', '_')  # Windows doesn't like `:` because it's stupid
         with open(out_path, 'wb') as f:
             f.write(imgdata)
         path = convert_image(out_path)

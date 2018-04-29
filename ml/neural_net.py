@@ -280,8 +280,8 @@ if __name__ == "__main__":
     # load_model(net, 'models/2018-04-09 20:13:48.191474.pth')
 
     # Create loss function
-    criterion = nn.CrossEntropyLoss().cuda()
-    # criterion = nn.MSELoss().cuda()
+    criterion = nn.CrossEntropyLoss()
+    # criterion = nn.MSELoss()
 
     # Create optimizer (gradient descent)
     # optimizer = optim.SGD(net.parameters(), lr=0.001, momentum=0.9)
@@ -306,7 +306,7 @@ if __name__ == "__main__":
 
             # wrap them in Variab   le
             # uncomment following and comment one after to enable GPU processing
-            inputs, labels = Variable(inputs.cuda()), Variable(labels.cuda())
+            inputs, labels = Variable(inputs), Variable(labels)
             # inputs, labels = Variable(inputs), Variable(labels)
             # Variable's are used to allow for automatic back propagation (shown later) [5]
 
@@ -364,7 +364,7 @@ if __name__ == "__main__":
     total = 0
     for data in testloader:
         images, labels = data
-        images, labels = images.cuda(), labels.cuda()
+        images, labels = images, labels
         outputs = net(Variable(images))
         _, predicted = torch.max(outputs.data, 1)
         total += labels.size(0)
