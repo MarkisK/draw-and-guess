@@ -23,7 +23,7 @@ $(function () {
             },
             type: 'POST',
             success: function (response) {
-                alert('Guess: ' + response.result)
+                document.getElementById("output").innerHTML=response.result;
             },
             error: function () {
                 alert('error')
