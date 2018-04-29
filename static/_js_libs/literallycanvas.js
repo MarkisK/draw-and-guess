@@ -4854,7 +4854,7 @@ Picker = React.createClass({
         left: 0,
         right: 0
       }
-    }, ColorPickers({
+    }, /*ColorPickers({
       lc: this.props.lc
     }), UndoRedoButtons({
       lc: lc,
@@ -4862,7 +4862,7 @@ Picker = React.createClass({
     }), ZoomButtons({
       lc: lc,
       imageURLPrefix: imageURLPrefix
-    }), ClearButton({
+    }),*/ ClearButton({
       lc: lc
     })));
   },

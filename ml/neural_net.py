@@ -139,7 +139,7 @@ def save_model(model, path='ml/models/{}.pth'.format(run_time)):
 
 
 def load_model(model, path):
-    model.load_state_dict(torch.load(path))
+    model.load_state_dict(torch.load(path, map_location=lambda storage, loc: storage))
     return
 
 

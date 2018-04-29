@@ -1,12 +1,16 @@
+
+
 // Canvas init
 var lc = LC.init(document.getElementById("lc"), {
     imageURLPrefix: '../static/_assets/lc-images',
     toolbarPosition: 'hidden',
     keyboardShortcuts: false,
     defaultStrokeWidth: 1,
-    tools: [LC.tools.Pencil, LC.tools.Eraser],
+    // tools: [LC.tools.Pencil, LC.tools.Eraser],
     imageSize: {width: 256, height: 256}
 });
+
+lc.setZoom(2);
 
 
 // POST Drawing to Flask
@@ -22,7 +26,8 @@ $(function () {
             },
             type: 'POST',
             success: function (response) {
-                alert('Guess: ' + response.result)
+                // document.getElementById("output").innerHTML=showGuess(response.result);
+                showGuess(response.result);
             },
             error: function () {
                 alert('error')

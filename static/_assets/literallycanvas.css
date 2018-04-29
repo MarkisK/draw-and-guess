@@ -100,13 +100,13 @@
 
 .literally .lc-drawing.with-gui {
     right: 0;
-    left: 61px;
+    /*left: 61px;*/
     cursor: default
 }
 
 .literally .lc-drawing.with-gui .polygon-toolbar {
     top: auto;
-    height: 31px
+    /*height: 31px*/
 }
 
 .literally .lc-drawing.with-gui .polygon-toolbar .polygon-toolbar-button {
