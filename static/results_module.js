@@ -4,7 +4,7 @@
 var responsePrefix = [
     "Definitely a ",
     "It's a ",
-    "Hmmm...a ",
+    "Hmmm...",
     "It looks like a ",
     "I think it's a ",
     "oh I know! A "
