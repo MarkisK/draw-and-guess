@@ -10,6 +10,7 @@ var responsePrefix = [
     "oh I know! A "
     ];
 
+
 function generateRandomPrefix(){
     return responsePrefix[Math.floor(Math.random() * responsePrefix.length)]
 }
@@ -23,10 +24,13 @@ function testRandomPrefix() {
 }
 
 function showGuess(result){
-    document.getElementById("output").innerHTML = (generateRandomPrefix() + result + "!");
+    var element = document.getElementById("output");
+    element.innerHTML = (generateRandomPrefix() + result + "!");
+    element.setAttribute("class", "alert alert-primary");
+    element.scrollIntoView();
 }
 
 function guessClear() {
-    document.getElementById("output").innerHTML = "";
-
+    document.getElementById("output").innerHTML= "";
+    document.getElementById("output").removeAttribute("class");
 }
