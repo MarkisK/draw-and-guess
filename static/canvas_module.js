@@ -1,3 +1,5 @@
+
+
 // Canvas init
 var lc = LC.init(document.getElementById("lc"), {
     imageURLPrefix: '../static/_assets/lc-images',
@@ -9,6 +11,7 @@ var lc = LC.init(document.getElementById("lc"), {
 });
 
 lc.setZoom(2);
+
 
 // POST Drawing to Flask
 $(function () {
@@ -23,7 +26,8 @@ $(function () {
             },
             type: 'POST',
             success: function (response) {
-                document.getElementById("output").innerHTML=response.result;
+                // document.getElementById("output").innerHTML=showGuess(response.result);
+                showGuess(response.result);
             },
             error: function () {
                 alert('error')
