@@ -19,8 +19,8 @@ Draw and Guess is a web application created using artificial intelligence. Draw 
 4.	Draw and Guess visually or verbally makes guess at what the user has drawn
 
 # Running Instructions Setup
-
-1. `pip install flask`
-2. `export FLASK_APP=dng.py` or `set FLASK_APP=dng.py` (windows)
-3. `flask run`
-4. open `127.0.0.1:5000` in browser
+1.  From command line, navigate to the download project directory. i.e cd Downloads/draw-and-guess/
+2.  pip install flask
+3.  export FLASK_APP=dng.py` or `set FLASK_APP=dng.py` (windows)
+4.  flask run
+5.  open `127.0.0.1:5000` in browser
