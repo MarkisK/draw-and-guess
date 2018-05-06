@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html>
+<head>
+
+<style>
+h1 {background-color: mediumSeaGreen;
+padding: 70px;
+bolder: 4px solid black
+
+}
+
+</style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+<nav class="item"style= "text-align:center; background-color:orange">
+  <a href="#home" >Home</a>
+  <a href="#shapes" class="item">Shapes</a>
+  <a href="table.html" class="item">Contact</a>
+</nav>
+<p id="t"></p>
+
+<script >
+document.getElementById("t").innerHTML = new Date();
+</script>
+<p style= "text-align:right"><a href="#c">Go to the drawing canvas</a></p>
+</style>
+<div id="myCarousel" class="carousel slide text-center" data-ride="carousel" background-color= "red" >
+  <!-- Indicators -->
+  <ol class="carousel-indicators">
+    <li data-target="#myCarousel" data-slide-to="0" class="active"></li>
+    <li data-target="#myCarousel" data-slide-to="1"></li>
+    <li data-target="#myCarousel" data-slide-to="2"></li>
+	<li data-target="#myCarousel" data-slide-to="3"></li>
+  </ol>
+
+  <!-- Wrapper for slides -->
+  <div class="carousel-inner" role="listbox">
+    <div class="item active">
+    <h4>WELCOME TO DRAW AND GUESS APP<br><span style="font-style:normal;">..............</span></h4>
+    </div>
+	 <div class="item">
+      <h4>Draw and GUESS is a machine learning/AI application<br><span style="font-style:normal;">inspired by "Google Quick Draw"</span></h4>
+    </div> 
+    <div class="item">
+      <h4>"Capstone course project by students..."<br><span style="font-style:normal;">Ernest-Marcus-Sagar-Markis-Nicholas-David</span></h4>
+    </div>
+    <div class="item">
+      <h4> Follow the instructions on the screen<br><span style="font-style:normal;">Drawing is fun</span></h4>
+    </div>
+  </div>
+
+  <!-- Left and right controls -->
+  <a class="left carousel-control" href="#myCarousel" role="button" data-slide="prev">
+    <span class="glyphicon glyphicon-chevron-left" aria-hidden="true"></span>
+    <span class="sr-only">Previous</span>
+  </a>
+  <a class="right carousel-control" href="#myCarousel" role="button" data-slide="next">
+    <span class="glyphicon glyphicon-chevron-right" aria-hidden="true"></span>
+    <span class="sr-only">Next</span>
+  </a>
+</div>
+<title> CMSC 495_Draw_and_Guess Project</title>
+<h1 style= "text-align:center; color:blue"title= "Ernest, Sugar, Medwards, David, Markis, Nicholas"><ins> WELCOME TO DRAW AND GUESS</ins></h1>
+<h2 style= "color:blue;font-family: courier" title="explanation"> Application Specifications</h2>
+</head>
+<p>
+
+-User should be able to draw any shape<br> -User should be able to navigate easily through web application<br> -Draw
+ and Guess should correctly state the shape that is drawn<br>-Draw and Guess should learn various shapes over continuous usage</p>
+<hr>
+<body style= "background-color:rgba(199,200,197,0.6)">
+<a href= "table.html" target="_self">
+<h id="c">Contact us</h>
+<p style= "background-color: lightblue;color:red;text-align:left; padding: 90px; border: 7px solid blue; font-size: 30px" title=" Medwards please insert the drawing canvas here", >
+ The drawing canvas goes here</p>
+
+</body>
+</html>
