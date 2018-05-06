@@ -4,7 +4,7 @@ from flask import Flask, render_template, request, jsonify
 import base64
 from PIL import Image
 
-from .ml import *
+from .ml 
 
 app = Flask(__name__)
 # Create and load pre-trained neural network
