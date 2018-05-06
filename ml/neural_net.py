@@ -92,7 +92,9 @@ from PIL import Image
 from torch.autograd import Variable
 from torchvision.datasets import ImageFolder
 
+
 run_time = datetime.datetime.now()
+
 
 
 def log(message):
