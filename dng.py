@@ -4,7 +4,7 @@ from flask import Flask, render_template, request, jsonify
 import base64
 from PIL import Image
 
-from neural_net import make_guess, load_model, Net
+from ml.neural_net import make_guess, load_model, Net
 
 app = Flask(__name__)
 # Create and load pre-trained neural network
