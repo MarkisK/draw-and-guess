@@ -4,12 +4,19 @@ from flask import Flask, render_template, request, jsonify
 import base64
 from PIL import Image
 
-from ml.neural_net import make_guess, load_model, Net
+from neural_net import make_guess, load_model, Net
+
+# Model Download: https://mega.nz/#!YU8l2ChT!VEKIfNNfL7fAfoRmKFJhU7K__XTTJw2GLOUTBkFVOX8
+# Once downloaded, extract the .pth file to ml/models/ folder
+
+MODEL_NAME = 'trained_model_49.pth'  # The name of your model as found in ml/models/ folder
 
 app = Flask(__name__)
 # Create and load pre-trained neural network
-net = Net(49)
-load_model(net, path='ml/models/2018-04-10 09:16:59.032209.pth')
+
+net = Net(total_classes=49)
+load_model(net, path='ml/models/{}'.format(MODEL_NAME))
+
 
 
 def convert_image(image_path):
