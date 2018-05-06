@@ -4,7 +4,7 @@ from flask import Flask, render_template, request, jsonify
 import base64
 from PIL import Image
 
-from neural_net import make_guess, load_model, Net
+from ml.neural_net import make_guess, load_model, Net
 
 # Model Download: https://mega.nz/#!YU8l2ChT!VEKIfNNfL7fAfoRmKFJhU7K__XTTJw2GLOUTBkFVOX8
 # Once downloaded, extract the .pth file to ml/models/ folder
